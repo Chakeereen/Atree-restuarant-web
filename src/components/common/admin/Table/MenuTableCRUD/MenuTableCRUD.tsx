@@ -74,14 +74,18 @@ export default function MenuTableCRUD() {
                                 <TableHead>ชื่อเมนู</TableHead>
                                 <TableHead>ราคา</TableHead>
                                 <TableHead>สถานะ</TableHead>
-                                <TableHead>ประเภท</TableHead>
+                                <TableHead><div className="flex space-x-2 items-center">
+                                    <p>ประเภท
+                                        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                                            <option value="All">All</option>
+                                            <option value="อาหาร">อาหาร</option>
+                                            <option value="เครื่องดื่ม">เครื่องดื่ม</option>
+                                        </select>
+                                    </p>
+                                </div> </TableHead>
                                 <TableHead className="text-right">การจัดการ</TableHead>
                                 <TableHead>
-                                    <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-                                        <option value="All">All</option>
-                                        <option value="อาหาร">อาหาร</option>
-                                        <option value="เครื่องดื่ม">เครื่องดื่ม</option>
-                                    </select>
+
 
                                 </TableHead>
                             </TableRow>
@@ -89,7 +93,7 @@ export default function MenuTableCRUD() {
 
                         <TableBody>
                             {menus.filter((menu) => {
-                                if(filterType ==="All") return menu.type?.name;
+                                if (filterType === "All") return true;
                                 else return menu.type?.name === filterType;
                             }).map((menu) => (
                                 <TableRow key={menu.menuID}>
