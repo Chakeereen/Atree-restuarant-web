@@ -26,7 +26,7 @@ export default function MenuTableCRUD() {
     const [loading, setLoading] = useState(true);
     const [editingMenu, setEditingMenu] = useState<MenuLists | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
+    const [filterType, setFilterType] = useState<string>("All");
     // ฟังก์ชัน fetch menus
     const fetchMenus = async () => {
         setLoading(true);
@@ -76,11 +76,22 @@ export default function MenuTableCRUD() {
                                 <TableHead>สถานะ</TableHead>
                                 <TableHead>ประเภท</TableHead>
                                 <TableHead className="text-right">การจัดการ</TableHead>
+                                <TableHead>
+                                    <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                                        <option value="All">All</option>
+                                        <option value="อาหาร">อาหาร</option>
+                                        <option value="เครื่องดื่ม">เครื่องดื่ม</option>
+                                    </select>
+
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
 
                         <TableBody>
-                            {menus.map((menu) => (
+                            {menus.filter((menu) => {
+                                if(filterType ==="All") return menu.type?.name;
+                                else return menu.type?.name === filterType;
+                            }).map((menu) => (
                                 <TableRow key={menu.menuID}>
                                     <TableCell>
                                         <img
