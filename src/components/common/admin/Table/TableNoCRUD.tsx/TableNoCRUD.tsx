@@ -12,14 +12,16 @@ import {
 } from "@/components/ui/table";
 import { Loader2 } from "lucide-react";
 
-import { TableNo } from "../../../../../../utils/type";
+
 import Modal from "@/components/common/Modal";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "../ConfirmModal";
 import { toast } from "sonner";
 import { EditTableNo } from "./Edit/EditTableNo";
-import { deleteTableNoAction, getTableNoAll } from "../../../../../../action/admin/TableNoAction";
+
 import CreateTableNo from "@/app/admin/table/create/page";
+import { deleteTableNoAction, getTableNoAll } from "@/action/admin/TableNoAction";
+import { TableNo } from "@/utils/type";
 
 export default function MenuTypeTableCRUD() {
     const [loading, setLoading] = useState(true);

@@ -117,7 +117,7 @@ export default function StaffTableCRUD() {
                                             description={`คุณแน่ใจไหมว่าต้องการลบ "${staff.name}"?`}
                                             onConfirm={async () => {
                                                 try {
-                                                    const result = await deleteStaffAction(staff.staffID, staff.fileID)
+                                                    const result = await deleteStaffAction(staff.staffID, staff.fileID ?? "")
                                                     if (result.success) {
                                                         toast.success(result.message)
                                                         fetchStaffs()

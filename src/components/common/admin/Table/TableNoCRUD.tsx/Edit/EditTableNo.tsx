@@ -3,9 +3,11 @@
 import { SubmitButton } from "@/components/common/admin/Form/Button";
 
 import FormInput from "@/components/common/admin/Form/FormInput";
-import { TableNo } from "../../../../../../../utils/type";
+
 import { FormContainer } from "../../../Form/FormContainer";
-import { editTableNoAction } from "../../../../../../../action/admin/TableNoAction";
+import { editTableNoAction } from "@/action/admin/TableNoAction";
+import { TableNo } from "@/utils/type";
+
 
 interface EditTableNoProps {
   tableNo: TableNo;

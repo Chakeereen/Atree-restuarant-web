@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MenuType } from "../../../../../utils/type";
+import { MenuType } from "@/utils/type";
+
 import { useEffect, useState } from "react";
 
 interface MenuCategoryProps {

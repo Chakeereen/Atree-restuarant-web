@@ -6,8 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { MenuLists } from "@/utils/type";
+import { getMenuAll } from "@/action/admin/MenuAction";
 
-const baseUrl = process.env.API_URL as string;
+
 
 export default function MenuTable() {
   const [menus, setMenus] = useState<MenuLists[]>([]);
@@ -16,11 +17,11 @@ export default function MenuTable() {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const res = await fetch(`${baseUrl}/api/admin/menu`, { cache: "no-store" });
-        if (!res.ok) throw new Error("Failed to fetch menus");
-        const data = await res.json();
-        console.log(data)
-        setMenus(data);
+        const res = await getMenuAll();
+        if (!res.success) throw new Error("Failed to fetch menus");
+        if (res.success) {
+          setMenus(res.data);
+        }
       } catch (error) {
         console.error("Error fetching menus:", error);
       } finally {
