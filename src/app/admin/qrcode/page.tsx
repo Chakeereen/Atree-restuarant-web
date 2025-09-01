@@ -1,29 +1,33 @@
 'use client'
 import { SubmitButton } from "@/components/common/admin/Form/Button";
 import FormInput from "@/components/common/admin/Form/FormInput"
+import ImageInput from "@/components/common/admin/Form/ImageInput";
 import { FormContainer } from "@/components/common/admin/Form/FormContainer";
-import { createTableNoAction } from "@/action/admin/TableNoAction";
+import { MenuCategoryInput } from "@/components/common/admin/Form/MenuCategoryInput";
+import { generateOrderForTable } from "@/action/admin/CreateOrderAction";
 
 
-interface CreateTableProps {
+
+
+interface CreateMenuProps {
   onSuccess?: () => void
 }
 
-const CreateTableNo = ({ onSuccess }: CreateTableProps) => {
+const CreateMenu = ({ onSuccess }: CreateMenuProps) => {
     return (
         <section>
             <h1 className="text-2xl font-semibold mb-8 capitalize">new menu</h1>
             <div className="border p-8 rounded-md max-w-lg">
                 <FormContainer 
-                    action={createTableNoAction} 
+                    action={generateOrderForTable} 
                     onSuccess={onSuccess} // ✅ เรียก callback หลังสร้างเมนูสำเร็จ
                     refreshOnSuccess={false} // ไม่ต้อง refresh ในนี้ เพราะเราจะทำใน onSuccess ของ Page
                 >
-                    <FormInput name="locationDetail" label="location Detail" type="text" />
+                    <FormInput name="table" label="table" type="number" />
                     <SubmitButton text="create menu" />
                 </FormContainer>
             </div>
         </section>
     )
 }
-export default CreateTableNo
+export default CreateMenu

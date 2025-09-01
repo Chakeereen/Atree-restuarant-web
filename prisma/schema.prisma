@@ -53,13 +53,13 @@ model ServiceState {
 
 model Orders {
   orderNo   Int      @id @default(autoincrement())
-  tableNO   Int
+  tableNo   Int
   serviceID Int
   dateTime  DateTime @default(now())
   updateAt  DateTime @updatedAt
   role      String   @default("customer")
 
-  table    Table         @relation(fields: [tableNO], references: [tableNo])
+  table    Table         @relation(fields: [tableNo], references: [tableNo])
   service  ServiceState  @relation(fields: [serviceID], references: [serviceID])
   details  OrderDetail[]
   payments Payment[]
