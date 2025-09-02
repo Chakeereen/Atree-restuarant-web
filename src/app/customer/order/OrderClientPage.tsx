@@ -166,22 +166,22 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
 
         {/* Tabs */}
         <div className="sticky top-[64px] z-10 bg-white border-b">
-          <div ref={tabsRef} className="flex gap-2 overflow-x-auto p-2 scrollbar-hide relative">
+          <div ref={tabsRef} className="flex gap-2 overflow-x-auto p-3 scrollbar-hide relative">
             <button
               data-id="all"
-              className={`px-3 py-1 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'
-                }`}
+              className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'
+              }`}
               onClick={() => handleTabClick(null)}
-            >
+              >
               All
             </button>
             {menuTypes.map((type) => (
               <button
-                key={type.typeID}
-                data-id={type.typeID}
-                className={`px-3 py-1 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'
-                  }`}
-                onClick={() => handleTabClick(type.typeID)}
+              key={type.typeID}
+              data-id={type.typeID}
+              className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'
+              }`}
+              onClick={() => handleTabClick(type.typeID)}
               >
                 {type.name}
               </button>
@@ -190,9 +190,10 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             <div
               className="absolute bottom-0 h-1 bg-blue-500 transition-all duration-300"
               style={{ left: underlineStyle.left, width: underlineStyle.width }}
-            />
+              />
           </div>
         </div>
+             
 
         {/* Menu List */}
         <main className="flex-1 overflow-y-auto p-4">
@@ -204,7 +205,11 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             if (menusOfType.length === 0) return null;
 
             return (
-              <div key={type.typeID} ref={(el) => {(menuRefs.current[type.typeID] = el)}}>
+              <div
+                key={type.typeID}
+                ref={(el) => { (menuRefs.current[type.typeID] = el) }}
+                style={{ scrollMarginTop: '200px' }} // เลื่อนลงจาก header 80px
+              >
                 <h2 className="text-lg font-semibold my-2">{type.name}</h2>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   <MenuList
