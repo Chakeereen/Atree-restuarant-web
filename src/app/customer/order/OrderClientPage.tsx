@@ -4,6 +4,7 @@ import { MenuLists, MenuType, OrderDetail } from '@/utils/type';
 import MenuList from '@/components/common/customer/MenuList';
 import CartFooter from '@/components/common/customer/CartFooter';
 import { submitOrder } from '@/action/customer/OrderAction';
+import { toast} from 'sonner'; // ✅ import sonner
 
 interface OrderPageProps {
   orderInfo: { orderNo: number; tableNo: number };
@@ -92,25 +93,25 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
     [cart]
   );
 
+  // ✅ handle submit with sonner toast
   const handleSubmitOrder = async () => {
     if (cart.length === 0) {
-      alert('กรุณาเลือกเมนูอาหาร');
+      toast.warning('กรุณาเลือกเมนูอาหาร');
       return;
     }
     setIsSubmitting(true);
     try {
       await submitOrder(orderInfo, cart);
-      alert(`สั่งอาหารสำหรับโต๊ะ ${orderInfo.tableNo} สำเร็จ!`);
+      toast.success(`สั่งอาหารสำหรับโต๊ะ ${orderInfo.tableNo} สำเร็จ!`);
       setCart([]);
     } catch (err) {
       console.error(err);
-      alert('เกิดข้อผิดพลาดในการสั่งอาหาร');
+      toast.error('เกิดข้อผิดพลาดในการสั่งอาหาร');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle tab click & scroll
   const handleTabClick = (typeID: number | null) => {
     setSelectedType(typeID);
     const el = menuRefs.current[typeID ?? 'all'];
@@ -119,11 +120,9 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
     }
   };
 
-  // IntersectionObserver to change selected tab on scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        // filter section ที่กำลัง intersect
         const visibleSections = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -146,27 +145,25 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
     return () => observer.disconnect();
   }, []);
 
-
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
+     
+
       <div
         className="mx-auto min-h-screen bg-white shadow-lg 
                    w-full sm:w-[400px] md:w-[700px] lg:w-[900px] xl:w-[1100px] 
                    transition-all duration-300 flex flex-col"
       >
-        {/* Header */}
         <header className="p-4 border-b sticky top-0 bg-white z-20">
           <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderInfo.tableNo}</h1>
           <p className="text-sm text-gray-500">Order #{orderInfo.orderNo}</p>
         </header>
 
-        {/* Tabs */}
         <div className="sticky top-[64px] z-10 bg-white border-b">
           <div ref={tabsRef} className="flex gap-2 overflow-x-auto p-3 scrollbar-hide relative">
             <button
               data-id="all"
-              className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'
-                }`}
+              className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
               onClick={() => handleTabClick(null)}
             >
               All
@@ -175,14 +172,12 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
               <button
                 key={type.typeID}
                 data-id={type.typeID}
-                className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'
-                  }`}
+                className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
                 onClick={() => handleTabClick(type.typeID)}
               >
                 {type.name}
               </button>
             ))}
-            {/* Underline animation */}
             <div
               className="absolute bottom-0 h-1 bg-blue-500 transition-all duration-300"
               style={{ left: underlineStyle.left, width: underlineStyle.width }}
@@ -190,11 +185,8 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
           </div>
         </div>
 
-
-        {/* Menu List */}
         <main className="flex-1 overflow-y-auto p-4">
-          {/* All section at top */}
-          <div ref={(el) => { (menuRefs.current['all'] = el) }} />
+          <div ref={(el) => { menuRefs.current['all'] = el }} />
 
           {menuTypes.map((type) => {
             const menusOfType = menuLists.filter((menu) => menu.typeID === type.typeID);
@@ -205,12 +197,12 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
                 key={type.typeID}
                 ref={(el) => { menuRefs.current[type.typeID] = el }}
                 style={{ scrollMarginTop: '175px' }}
-                className="bg-gray-100 rounded-lg p-4 mb-4"
+                className="bg-gray-50 rounded-lg p-4 mb-4" // ✅ เบา ๆ แยก section
               >
                 <h2 className="text-lg font-semibold mb-3">{type.name}</h2>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   <MenuList
-                    menus={menusOfType}      // ส่ง array ของเมนูทั้งหมดของ type
+                    menus={menusOfType}
                     cart={cart}
                     onAdd={handleAddItem}
                     onRemove={handleRemoveItem}
@@ -221,7 +213,6 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
           })}
         </main>
 
-        {/* Cart Footer */}
         {totalItems > 0 && (
           <CartFooter
             totalItems={totalItems}

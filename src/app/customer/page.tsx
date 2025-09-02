@@ -35,6 +35,7 @@ export default async function CustomerPage() {
 
   return (
     <main>
+      
       <OrderClientPage
         orderInfo={{ orderNo: Number(payload.orderNo), tableNo: Number(payload.tableNo) }}
         menuLists={menuLists}
