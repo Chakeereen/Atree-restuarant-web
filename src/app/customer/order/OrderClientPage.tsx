@@ -146,10 +146,6 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
     return () => observer.disconnect();
   }, []);
 
-  const filteredMenus = useMemo(() => {
-    if (!selectedType) return menuLists;
-    return menuLists.filter((menu) => menu.typeID === selectedType);
-  }, [menuLists, selectedType]);
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
@@ -170,18 +166,18 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             <button
               data-id="all"
               className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'
-              }`}
+                }`}
               onClick={() => handleTabClick(null)}
-              >
+            >
               All
             </button>
             {menuTypes.map((type) => (
               <button
-              key={type.typeID}
-              data-id={type.typeID}
-              className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'
-              }`}
-              onClick={() => handleTabClick(type.typeID)}
+                key={type.typeID}
+                data-id={type.typeID}
+                className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'
+                  }`}
+                onClick={() => handleTabClick(type.typeID)}
               >
                 {type.name}
               </button>
@@ -190,10 +186,10 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             <div
               className="absolute bottom-0 h-1 bg-blue-500 transition-all duration-300"
               style={{ left: underlineStyle.left, width: underlineStyle.width }}
-              />
+            />
           </div>
         </div>
-             
+
 
         {/* Menu List */}
         <main className="flex-1 overflow-y-auto p-4">
@@ -207,10 +203,11 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             return (
               <div
                 key={type.typeID}
-                ref={(el) => { (menuRefs.current[type.typeID] = el) }}
-                style={{ scrollMarginTop: '200px' }} // เลื่อนลงจาก header 80px
+                ref={(el) => { menuRefs.current[type.typeID] = el }}
+                style={{ scrollMarginTop: '175px' }}
+                className="bg-gray-100 rounded-lg p-4 mb-4"
               >
-                <h2 className="text-lg font-semibold my-2">{type.name}</h2>
+                <h2 className="text-lg font-semibold mb-3">{type.name}</h2>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   <MenuList
                     menus={menusOfType}      // ส่ง array ของเมนูทั้งหมดของ type
