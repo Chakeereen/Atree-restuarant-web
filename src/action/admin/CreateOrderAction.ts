@@ -10,27 +10,36 @@ const baseUrl = process.env.API_URL as string;
 export const generateOrderForTable = async (prevState: any, formData: FormData) => {
   const tableNo = Number(formData.get("table"));
 
+  let table: number | null = null;
+  let order: number | null = null;
+
   try {
-    // 1. สร้าง Order ใหม่ในฐานข้อมูล
-    const newOrder = await prisma.orders.create({
-      data: {
-        tableNo: tableNo,
-        serviceID: 1, // สถานะเริ่มต้นคือ ACTIVE
-      },
-    });
 
-    // 2. เตรียมข้อมูลสำหรับสร้าง QR Code
-    const orderId = newOrder.orderNo;
-    const qrData = {
-      tableNo,
-      orderId,
-    };
+    if (tableNo) {
+      const response = await fetch(`${baseUrl}/api/staff`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tableNo }), // ✅ ต้องส่งเป็น object
+      });
 
-    console.log(`Order created: ${orderId} for table: ${tableNo}`);
+      if (!response.ok) {
+        return { success: false, message: "ไม่สามารถสร้างออร์เดอร์ได้" };
+      }
+
+      const result = await response.json();
+
+      // ✅ ใช้ค่าที่ API ส่งกลับ
+      table = result.tableNo;
+      order = result.orderNo;
+    }
+
+
+
+    console.log(`Order created: ${order} for table: ${table}`);
 
     // 3. ส่งข้อมูลกลับไปให้ UI ของพนักงาน
     // UI จะนำ URL นี้ไปสร้างเป็น QR Code ต่อไป
-    const authUrl = `${baseUrl}/api/auth/customer?tableId=${tableNo}&orderId=${orderId}`;
+    const authUrl = `${baseUrl}/api/auth/customer?tableId=${table}&orderId=${order}`;
 
     revalidatePath("/admin"); // สั่งให้หน้า dashboard โหลดข้อมูลใหม่ (ถ้ามี)
     console.log(authUrl)
@@ -38,7 +47,7 @@ export const generateOrderForTable = async (prevState: any, formData: FormData) 
       success: true,
       message: "สร้าง QR code สำเร็จ",
       data: {
-        orderId: orderId,
+        orderId: order,
         authUrl: authUrl, // URL สำหรับ QR Code
       },
     };
