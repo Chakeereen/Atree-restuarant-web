@@ -73,7 +73,7 @@ model OrderDetail {
   amount       Int
   price        Decimal  @db.Decimal(10, 2)
   totalCost    Decimal  @db.Decimal(10, 2)
-  dateTime     DateTime
+  dateTime     DateTime @default(now())
   updateAT     DateTime @updatedAt
 
   order Orders     @relation(fields: [orderNo], references: [orderNo])

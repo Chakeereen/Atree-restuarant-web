@@ -26,14 +26,18 @@ export async function GET(req: NextRequest) {
 }
 
 // PATCH /api/admin/menu/[id]
-export async function PATCH(req: NextRequest) {
+
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const id = req.nextUrl.pathname.split("/").pop();
-    if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
+    const { id } = params;
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Missing menu ID" },
+        { status: 400 }
+      );
+    }
 
     const body = await req.json();
-
-    // ตรวจสอบ field ที่สามารถ update ได้
     const { name, price, isAvailable, image, fileID, typeID } = body;
 
     const updatedMenu = await prisma.menuLists.update({
@@ -48,16 +52,26 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, message: "Menu updated successfully", data: updatedMenu });
+    return NextResponse.json({
+      success: true,
+      message: "Menu updated successfully",
+      data: updatedMenu,
+    });
   } catch (error: any) {
     console.error(error);
 
-    // ตรวจสอบ error จาก Prisma เช่น unique constraint
+    // Prisma unique constraint error
     if (error.code === "P2002") {
-      return NextResponse.json({ success: false, error: "Menu name must be unique" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Menu name must be unique" },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ success: false, error: "Failed to update menu" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to update menu" },
+      { status: 500 }
+    );
   }
 }
 

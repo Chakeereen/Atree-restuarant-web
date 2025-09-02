@@ -72,8 +72,8 @@ export interface OrderDetail {
   amount: number;
   price: number;
   totalCost: number;
-  dateTime: Date;
-  updateAT: Date;
+  dateTime?: Date;
+  updateAT?: Date;
   order?: Orders;
   menu?: MenuLists;
   track?: OrderTrack;
@@ -148,4 +148,9 @@ export interface LoginLog {
   loginResult: string;
   dateTime: Date;
   staff?: Staff;
+}
+
+export interface CartItem extends OrderDetail {
+  name: string;
+  image: string;
 }

@@ -90,7 +90,7 @@ export const editMenuAction = async (prevState: any, formData: FormData) => {
       const uploadForm = new FormData();
       uploadForm.append("file", file);
 
-      const uploadRes = await fetch(`${baseUrl}/api/admin/image`, {
+      const uploadRes = await fetch(`${baseUrl}/api/admin/menu/image`, {
         method: "POST",
         body: uploadForm,
       });

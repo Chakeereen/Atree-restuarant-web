@@ -1,12 +1,14 @@
-// สมมติว่า path นี้ถูกต้อง
 import { cookies } from "next/headers";
-import { getMenuData } from "@/lib/data";
-import OrderClientPage from "./OrderClientPage"; // Import Client Component
+
+import { getMenuAll } from "@/action/admin/MenuAction";
 import { getPayloadFromToken } from "@/utils/่jwt";
+import OrderClientPage from "./order/OrderClientPage";
+import { MenuLists, MenuType } from "@/utils/type";
+import { getMenuData, getMenuType } from "@/action/customer/OrderAction";
 
 export default async function CustomerPage() {
   const cookieStore = cookies();
-  const token =   (await cookieStore).get("accessToken")?.value;
+  const token = (await cookieStore).get("accessToken")?.value;
 
   const payload = token ? getPayloadFromToken(token) : null;
 
@@ -18,15 +20,25 @@ export default async function CustomerPage() {
     );
   }
 
-  // ✅ ดึงข้อมูลเมนูทั้งหมดบน Server
-  const menuTypes = await getMenuData();
+  
+
+
+
+  // ดึง menuLists
+  const menuRes = await getMenuData();
+  const menuLists: MenuLists[] = menuRes.success ? (menuRes.data as MenuLists[]) : [];
+
+  // ดึง menuTypes
+  const typeRes = await getMenuType();
+  const menuTypes: MenuType[] = typeRes.success ? (typeRes.data as MenuType[]) : [];
+  console.log(menuTypes)
 
   return (
     <main>
-      {/* ส่งข้อมูลที่จำเป็น (payload และ menuTypes) ไปให้ Client Component */}
-      <OrderClientPage 
-        orderInfo={{ orderNo: Number(payload.orderNo) , tableNo: Number(payload.tableNo) }} 
-        menuTypes={menuTypes} 
+      <OrderClientPage
+        orderInfo={{ orderNo: Number(payload.orderNo), tableNo: Number(payload.tableNo) }}
+        menuLists={menuLists}
+        menuTypes={menuTypes}
       />
     </main>
   );
