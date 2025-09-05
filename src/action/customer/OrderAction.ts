@@ -8,10 +8,15 @@ import { MenuLists, OrderDetail } from '@/utils/type';
 const baseUrl = process.env.API_URL as string;
 
 export async function submitOrder(orderInfo: { orderNo: number; tableNo: number }, cart: OrderDetail[]) {
-    console.log("Saving order:", orderInfo, cart);
+
+    console.log(cart);
+
+    if(cart.length === 0) {
+      console.log("EMPTY")
+      return 
+    } 
     // ตัวอย่าง: บันทึก Order ลง DB
     try {
-        console.log("salfjsdafjsaoifapfasfaspifjifjsaio")
         await prisma.orderDetail.createMany({
             data: cart.map(item => ({
                 orderNo: orderInfo.orderNo,
@@ -77,3 +82,25 @@ export const getMenuType = async () => {
     return { success: false, data: [], error: error.message };
   }
 };
+
+export async function getOrderDetails(orderNo: number): Promise<OrderDetail[]> {
+
+  console.log(orderNo)
+  try {
+    const res = await fetch(`${baseUrl}/api/customer/orderDetails?orderNo=${orderNo}`, {
+      method: "GET",
+      cache: "no-store", // ป้องกัน cache
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData?.error || "Failed to fetch order details");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err: any) {
+    console.error("getOrderDetails error:", err);
+    return [];
+  }
+}

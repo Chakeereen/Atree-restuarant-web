@@ -6,6 +6,9 @@ import CartFooter from '@/components/common/customer/CartFooter';
 import { submitOrder } from '@/action/customer/OrderAction';
 import { toast } from 'sonner';
 import HoldOrderPage from '@/components/common/customer/ConfirmOrder';
+import { useRouter } from 'next/navigation';
+
+
 
 
 interface OrderPageProps {
@@ -20,6 +23,8 @@ interface CartItem extends OrderDetail {
 }
 
 export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: OrderPageProps) {
+  const router = useRouter();
+
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState<number | null>(null);
@@ -106,24 +111,8 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
     [cart]
   );
 
-  // ✅ handle submit with sonner toast
-  const handleSubmitOrder = async () => {
-    if (cart.length === 0) {
-      toast.warning('กรุณาเลือกเมนูอาหาร');
-      return;
-    }
-    setIsHold(true); // ยังไม่ส่ง API แค่เปลี่ยนหน้า
-    try {
-      await submitOrder(orderInfo, cart);
-      toast.success(`สั่งอาหารสำหรับโต๊ะ ${orderInfo.tableNo} สำเร็จ!`);
-      setCart([]);
-    } catch (err) {
-      console.error(err);
-      toast.error('เกิดข้อผิดพลาดในการสั่งอาหาร');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
+
 
   const handleTabClick = (typeID: number | null) => {
     setSelectedType(typeID);
@@ -175,6 +164,11 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             onConfirm={async () => {
               setIsSubmitting(true);
               try {
+                if (cart.length === 0) {
+                  toast.warning('กรุณาเลือกเมนูก่อน');
+                  setIsHold(false); // 🔹 กลับไปหน้าเลือกเมนู
+                  return;
+                }
                 await submitOrder(orderInfo, cart);
                 toast.success(`สั่งอาหารสำหรับโต๊ะ ${orderInfo.tableNo} สำเร็จ!`);
                 setCart([]);
@@ -190,9 +184,19 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
         ) : (
           // 🟡 หน้าเลือกเมนูปกติ
           <>
-            <header className="p-4 border-b sticky top-0 bg-white z-20">
-              <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderInfo.tableNo}</h1>
-              <p className="text-sm text-gray-500">Order #{orderInfo.orderNo}</p>
+            <header className="p-4 border-b sticky top-0 bg-white z-20 flex justify-between items-center">
+              <div>
+                <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderInfo.tableNo}</h1>
+                <p className="text-sm text-gray-500">Order #{orderInfo.orderNo}</p>
+              </div>
+
+              {/* ปุ่มไปหน้า OrderDetail */}
+              <button
+                onClick={() => router.push(`/customer/order/${orderInfo.orderNo}`)}
+                className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+              >
+                รายละเอียด
+              </button>
             </header>
 
             <div className="sticky top-[64px] z-10 bg-white border-b">
