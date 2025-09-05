@@ -20,6 +20,8 @@ export async function submitOrder(orderInfo: { orderNo: number; tableNo: number 
                 price: item.price,
                 totalCost: item.totalCost,
                 trackOrderID: item.trackOrderID,
+                description : item.description || '',
+                place: item.place,
             })),
         });
     } catch (err) {

@@ -71,6 +71,8 @@ model OrderDetail {
   menuID       Int
   trackOrderID Int
   amount       Int
+  description   String?
+  place        String
   price        Decimal  @db.Decimal(10, 2)
   totalCost    Decimal  @db.Decimal(10, 2)
   dateTime     DateTime @default(now())

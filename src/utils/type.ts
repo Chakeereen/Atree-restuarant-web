@@ -1,13 +1,16 @@
+
 // MenuLists
 export interface MenuLists {
   menuID: number;
   name: string;
-  price: number;
+  price: number; // Decimal -> number
   typeID: number;
   image: string;
   fileID: string;
   isAvailable: boolean;
-  
+  createAt: Date;
+  updateAt: Date;
+
   type?: MenuType;
   details?: OrderDetail[];
 }
@@ -28,7 +31,7 @@ export interface TableNo {
   orders?: Orders[];
 }
 
-// Admin
+// AdminS
 export interface Admin {
   adminID: string;
   email: string;
@@ -52,11 +55,12 @@ export interface ServiceState {
 // Orders
 export interface Orders {
   orderNo: number;
-  tableNO: number;
+  tableNo: number;
   serviceID: number;
   dateTime: Date;
   updateAt: Date;
   role: string;
+
   table?: TableNo;
   service?: ServiceState;
   details?: OrderDetail[];
@@ -72,8 +76,11 @@ export interface OrderDetail {
   amount: number;
   price: number;
   totalCost: number;
+  place: string;
+  description?: string; // จาก prisma schema typo: desription
   dateTime?: Date;
   updateAT?: Date;
+
   order?: Orders;
   menu?: MenuLists;
   track?: OrderTrack;
@@ -88,6 +95,7 @@ export interface CancelOrderLog {
   description: string;
   cancelBy: string;
   createAt: Date;
+
   detail?: OrderDetail;
 }
 
@@ -102,12 +110,13 @@ export interface OrderTrack {
 export interface Payment {
   paymentNo: number;
   orderNo: number;
-  totalCost: number;
+  totalCost: number; // Decimal -> number
   dateTime: Date;
   updateAt: Date;
   status: PaymentStatus;
   staffID: string;
   methodID: number;
+
   order?: Orders;
   staff?: Staff;
   method?: PayMethod;
@@ -137,6 +146,7 @@ export interface Staff {
   role: string;
   dateTime: Date;
   updateAt: Date;
+
   payments?: Payment[];
   loginLogs?: LoginLog[];
 }
@@ -147,9 +157,11 @@ export interface LoginLog {
   staffID: string;
   loginResult: string;
   dateTime: Date;
+
   staff?: Staff;
 }
 
+// CartItem
 export interface CartItem extends OrderDetail {
   name: string;
   image: string;

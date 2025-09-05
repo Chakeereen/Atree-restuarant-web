@@ -4,7 +4,9 @@ import { MenuLists, MenuType, OrderDetail } from '@/utils/type';
 import MenuList from '@/components/common/customer/MenuList';
 import CartFooter from '@/components/common/customer/CartFooter';
 import { submitOrder } from '@/action/customer/OrderAction';
-import { toast} from 'sonner'; // ✅ import sonner
+import { toast } from 'sonner';
+import HoldOrderPage from '@/components/common/customer/ConfirmOrder';
+
 
 interface OrderPageProps {
   orderInfo: { orderNo: number; tableNo: number };
@@ -25,6 +27,8 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
   const tabsRef = useRef<HTMLDivElement>(null);
   const menuRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+  const [isHold, setIsHold] = useState(false);
+
 
   // Update underline position on tab change
   useEffect(() => {
@@ -42,15 +46,19 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
 
   const handleAddItem = (menu: MenuLists) => {
     setCart((prev) => {
-      const existing = prev.find((i) => i.menuID === menu.menuID);
+      const index = prev.findIndex((i) => i.menuID === menu.menuID);
       const price = Number(menu.price);
-      if (existing) {
-        return prev.map((i) =>
-          i.menuID === menu.menuID
-            ? { ...i, amount: i.amount + 1, totalCost: (i.amount + 1) * i.price }
-            : i
-        );
+
+      if (index >= 0) {
+        const newCart = [...prev];
+        newCart[index] = {
+          ...newCart[index],
+          amount: newCart[index].amount + 1,
+          totalCost: (newCart[index].amount + 1) * newCart[index].price,
+        };
+        return newCart;
       }
+
       return [
         ...prev,
         {
@@ -63,9 +71,14 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
           totalCost: price,
           name: menu.name,
           image: menu.image,
+          place: 'กินที่ร้าน',      // default
+          description: '',          // default
         },
       ];
+
+
     });
+
   };
 
   const handleRemoveItem = (menuID: number) => {
@@ -99,7 +112,7 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
       toast.warning('กรุณาเลือกเมนูอาหาร');
       return;
     }
-    setIsSubmitting(true);
+    setIsHold(true); // ยังไม่ส่ง API แค่เปลี่ยนหน้า
     try {
       await submitOrder(orderInfo, cart);
       toast.success(`สั่งอาหารสำหรับโต๊ะ ${orderInfo.tableNo} สำเร็จ!`);
@@ -147,81 +160,108 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
-     
-
       <div
         className="mx-auto min-h-screen bg-white shadow-lg 
-                   w-full sm:w-[400px] md:w-[700px] lg:w-[900px] xl:w-[1100px] 
-                   transition-all duration-300 flex flex-col"
+                 w-full sm:w-[400px] md:w-[700px] lg:w-[900px] xl:w-[1100px] 
+                 transition-all duration-300 flex flex-col"
       >
-        <header className="p-4 border-b sticky top-0 bg-white z-20">
-          <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderInfo.tableNo}</h1>
-          <p className="text-sm text-gray-500">Order #{orderInfo.orderNo}</p>
-        </header>
-
-        <div className="sticky top-[64px] z-10 bg-white border-b">
-          <div ref={tabsRef} className="flex gap-2 overflow-x-auto p-3 scrollbar-hide relative">
-            <button
-              data-id="all"
-              className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
-              onClick={() => handleTabClick(null)}
-            >
-              All
-            </button>
-            {menuTypes.map((type) => (
-              <button
-                key={type.typeID}
-                data-id={type.typeID}
-                className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
-                onClick={() => handleTabClick(type.typeID)}
-              >
-                {type.name}
-              </button>
-            ))}
-            <div
-              className="absolute bottom-0 h-1 bg-blue-500 transition-all duration-300"
-              style={{ left: underlineStyle.left, width: underlineStyle.width }}
-            />
-          </div>
-        </div>
-
-        <main className="flex-1 overflow-y-auto p-4">
-          <div ref={(el) => { menuRefs.current['all'] = el }} />
-
-          {menuTypes.map((type) => {
-            const menusOfType = menuLists.filter((menu) => menu.typeID === type.typeID);
-            if (menusOfType.length === 0) return null;
-
-            return (
-              <div
-                key={type.typeID}
-                ref={(el) => { menuRefs.current[type.typeID] = el }}
-                style={{ scrollMarginTop: '175px' }}
-                className="bg-gray-50 rounded-lg p-4 mb-4" // ✅ เบา ๆ แยก section
-              >
-                <h2 className="text-lg font-semibold mb-3">{type.name}</h2>
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  <MenuList
-                    menus={menusOfType}
-                    cart={cart}
-                    onAdd={handleAddItem}
-                    onRemove={handleRemoveItem}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </main>
-
-        {totalItems > 0 && (
-          <CartFooter
-            totalItems={totalItems}
+        {isHold ? (
+          <HoldOrderPage
+            cart={cart}
+            setCart={setCart}  // ✅ ต้องส่ง setCart มา
             totalCost={totalCost}
             isSubmitting={isSubmitting}
-            onSubmit={handleSubmitOrder}
+            onBack={() => setIsHold(false)}
+            onConfirm={async () => {
+              setIsSubmitting(true);
+              try {
+                await submitOrder(orderInfo, cart);
+                toast.success(`สั่งอาหารสำหรับโต๊ะ ${orderInfo.tableNo} สำเร็จ!`);
+                setCart([]);
+                setIsHold(false);
+              } catch (err) {
+                console.error(err);
+                toast.error('เกิดข้อผิดพลาดในการสั่งอาหาร');
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
           />
+        ) : (
+          // 🟡 หน้าเลือกเมนูปกติ
+          <>
+            <header className="p-4 border-b sticky top-0 bg-white z-20">
+              <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderInfo.tableNo}</h1>
+              <p className="text-sm text-gray-500">Order #{orderInfo.orderNo}</p>
+            </header>
+
+            <div className="sticky top-[64px] z-10 bg-white border-b">
+              <div ref={tabsRef} className="flex gap-2 overflow-x-auto p-3 scrollbar-hide relative">
+                <button
+                  data-id="all"
+                  className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
+                  onClick={() => handleTabClick(null)}
+                >
+                  All
+                </button>
+                {menuTypes.map((type) => (
+                  <button
+                    key={type.typeID}
+                    data-id={type.typeID}
+                    className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
+                    onClick={() => handleTabClick(type.typeID)}
+                  >
+                    {type.name}
+                  </button>
+                ))}
+                <div
+                  className="absolute bottom-0 h-1 bg-blue-500 transition-all duration-300"
+                  style={{ left: underlineStyle.left, width: underlineStyle.width }}
+                />
+              </div>
+            </div>
+
+            <main className="flex-1 overflow-y-auto p-4">
+              <div ref={(el) => { menuRefs.current['all'] = el }} />
+
+              {menuTypes.map((type) => {
+                const menusOfType = menuLists.filter((menu) => menu.typeID === type.typeID);
+                if (menusOfType.length === 0) return null;
+
+                return (
+                  <div
+                    key={type.typeID}
+                    ref={(el) => { menuRefs.current[type.typeID] = el }}
+                    style={{ scrollMarginTop: '175px' }}
+                    className="bg-gray-50 rounded-lg p-4 mb-4"
+                  >
+                    <h2 className="text-lg font-semibold mb-3">{type.name}</h2>
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      <MenuList
+                        menus={menusOfType}
+                        cart={cart}
+                        onAdd={handleAddItem}
+                        onRemove={handleRemoveItem}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </main>
+
+            {totalItems > 0 && (
+              <CartFooter
+                totalItems={totalItems}
+                totalCost={totalCost}
+                isSubmitting={isSubmitting}
+                onSubmit={() => setIsHold(true)} // 🟡 เปลี่ยนตรงนี้
+              />
+            )}
+          </>
         )}
       </div>
     </div>
   );
+
+
 }
