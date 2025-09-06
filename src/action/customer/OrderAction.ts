@@ -106,13 +106,15 @@ export const getOrderDetails = async (orderNo: number) => {
 }
 
 export const cancelOrder = async (prevState: any, formData: FormData) => {
+  const descriptions = formData.getAll("description") as string[];
+  const combineDescrib = descriptions.join(", ");
 
   
   const rawFormData = {
     detailNo: Number(formData.get("detailNo")),
     orderNo: Number(formData.get("orderNo")),
-    description: "ลูกค้ายกเลิกเมนู",
-    cancelBy: "พนักงาน",
+    description: combineDescrib || "",
+    cancelBy: "ลูกค้า",
   }
   console.log(rawFormData)
   if(!rawFormData) {

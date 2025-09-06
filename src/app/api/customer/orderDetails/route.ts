@@ -25,6 +25,9 @@ export async function GET(request: NextRequest) {
         menu: {
           select: { name: true, image: true, type: true },
         },
+        cancelLog: {
+          select: { cancelBy: true, description: true, orderNo: true},
+        },
       },
     });
 

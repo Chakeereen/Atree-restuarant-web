@@ -84,7 +84,7 @@ export interface OrderDetail {
   order?: Orders;
   menu?: MenuLists;
   track?: OrderTrack;
-  cancelLog?: CancelOrderLog[];
+  cancelLog?: CancelOrderLog;
 }
 
 // CancelOrderLog

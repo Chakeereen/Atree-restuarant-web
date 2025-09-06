@@ -71,7 +71,7 @@ model OrderDetail {
   menuID       Int
   trackOrderID Int
   amount       Int
-  description   String?
+  description  String?
   place        String
   price        Decimal  @db.Decimal(10, 2)
   totalCost    Decimal  @db.Decimal(10, 2)
@@ -82,12 +82,12 @@ model OrderDetail {
   menu  MenuLists  @relation(fields: [menuID], references: [menuID])
   track OrderTrack @relation(fields: [trackOrderID], references: [trackOrderID])
 
-  cancelLog CancelOrderLog[]
+  cancelLog CancelOrderLog? // 👈 เปลี่ยนเป็น object เดียว (nullable)
 }
 
 model CancelOrderLog {
   cancelLog   Int      @id @default(autoincrement())
-  detailNo    Int
+  detailNo    Int      @unique // 👈 ทำให้ 1 detailNo มีได้แค่ 1 record
   orderNo     Int
   description String
   cancelBy    String
