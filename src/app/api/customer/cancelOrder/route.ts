@@ -2,6 +2,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+
+
+export async function GET(req: NextRequest) {
+  try {
+    const detailNo = req.nextUrl.searchParams.get('detailNo');
+
+    if (!detailNo) {
+      return NextResponse.json({ error: 'detailNo is required' }, { status: 400 });
+    }
+
+    const menus = await prisma.orderDetail.findMany({
+      where: { detailNo: Number(detailNo) },
+      select: { track: true }, // trackName ต้องตรงกับ column จริงใน DB
+    });
+
+    if (!menus.length) {
+      return NextResponse.json({ error: 'ไม่พบเมนู' }, { status: 404 });
+    }
+
+    // ตรวจสอบ trackName ของ element แรก
+    if (menus[0].track.trackStateName !== "ordering") {
+      return NextResponse.json(false, { status: 200 });
+    }
+
+    return NextResponse.json(menus, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching menus:", error);
+    return NextResponse.json(
+      { error: 'เกิดข้อผิดพลาดในการดึงข้อมูลเมนู' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

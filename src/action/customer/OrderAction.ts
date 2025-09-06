@@ -116,12 +116,22 @@ export const cancelOrder = async (prevState: any, formData: FormData) => {
     description: combineDescrib || "",
     cancelBy: "ลูกค้า",
   }
+
+  const checkCancel = rawFormData.detailNo;
   console.log(rawFormData)
   if(!rawFormData) {
     return  { message: 'safds', success: false };
+    
+  }
+  const check = await fetch(`${baseUrl}/api/customer/cancelOrder?detailNo=${checkCancel}`);
+  const checked = await check.json();
+  if(!checked) {
+     return { message: `ออร์เดอร์กำลังเตรียมการ ไม่สามารถยกเลิกได้ `, success: false };
   }
 
+  
   try {
+    
     const res = await fetch(`${baseUrl}/api/customer/cancelOrder`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
