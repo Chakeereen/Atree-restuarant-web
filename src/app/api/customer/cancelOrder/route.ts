@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
     // ตรวจสอบ trackName ของ element แรก
     if (menus[0].track.trackStateName !== "ordering") {
-      return NextResponse.json(false, { status: 200 });
+      return NextResponse.json(false, { status: 406 });
     }
 
     return NextResponse.json(menus, { status: 200 });

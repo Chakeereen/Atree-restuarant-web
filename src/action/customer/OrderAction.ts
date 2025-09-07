@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { MenuLists, OrderDetail } from '@/utils/type';
+import {OrderDetail } from '@/utils/type';
 
 
 

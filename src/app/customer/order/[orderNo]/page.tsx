@@ -5,6 +5,7 @@ import { OrderDetail } from '@/utils/type';
 import { useParams, useRouter } from 'next/navigation';
 import Modal from '@/components/common/Modal';
 import { CancelOrder } from '@/components/common/customer/CancelOrder/CancelOrder';
+import { toast } from 'sonner';
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -20,7 +21,7 @@ export default function OrderDetailPage() {
     if (result.success) {
       setOrderDetails(result.data);
     } else {
-      console.error(result.error);
+      toast.error(result.error);
     }
     setLoading(false);
   };
@@ -29,12 +30,30 @@ export default function OrderDetailPage() {
     fetchDetails();
   }, []);
 
+  const handleGoToPayment = () => {
+    // ✅ ไม่มีออเดอร์เลย
+    if (!orderDetails.length) {
+      alert("ไม่มีข้อมูลออเดอร์");
+      return;
+    }
+
+    // ✅ สมมติให้สถานะที่พร้อมชำระคือ ordering
+    const firstOrder = orderDetails[0];
+    if (firstOrder.track?.trackStateName !== "ordering") {
+      alert("ไม่สามารถไปหน้าชำระเงินได้ เนื่องจากออเดอร์ไม่อยู่ในสถานะที่สามารถชำระได้");
+      return;
+    }
+
+    // ✅ ถ้าผ่านทุกเงื่อนไข ให้ไปหน้าชำระเงิน
+    router.push(`/customer/payment/${orderNo}`);
+  };
+
   if (loading) return <p>กำลังโหลดข้อมูล...</p>;
   if (orderDetails.length === 0) return <p>ไม่มีรายการสั่งอาหาร</p>;
 
   return (
     <>
-      <div className="p-4 space-y-4">
+      <div className="p-4 pb-20 space-y-4">
         <header className="p-4 border-b sticky top-0 bg-white z-20 flex justify-between items-center">
           <div className="flex flex-col">
             <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderDetails.at(0)?.order?.tableNo}</h1>
@@ -42,19 +61,15 @@ export default function OrderDetailPage() {
           </div>
 
           <div className="flex gap-2">
-            {/* ปุ่มย้อนกลับ */}
             <button
               onClick={() => router.back()}
               className="bg-gray-200 text-gray-700 px-3 py-2 rounded hover:bg-gray-300"
             >
               ⬅ ย้อนกลับ
             </button>
-
-            {/* ปุ่มไปหน้า OrderDetail */}
-           
           </div>
         </header>
-        {/* ให้เพิ่ม card คล่ม map ด้านล่าง ใส่ชื่อว่า เมนที่กำลังดำเนินการ*/}
+
         <div className="p-4 space-y-6">
           {/* 🔹 เมนูที่กำลังดำเนินการ */}
           <div className="border rounded-lg shadow p-4 space-y-4">
@@ -106,6 +121,9 @@ export default function OrderDetailPage() {
             )}
           </div>
 
+          {/* 🔹 เส้นคั่น */}
+          <hr className="border-t-2 border-gray-300 my-4" />
+
           {/* 🔹 เมนูที่ถูกยกเลิก */}
           <div className="border rounded-lg shadow p-4 space-y-4">
             <h2 className="font-bold text-lg">เมนูที่ถูกยกเลิก</h2>
@@ -141,8 +159,18 @@ export default function OrderDetailPage() {
             )}
           </div>
         </div>
-
       </div>
+
+      {/* 🔹 Footer Button ไปหน้าชำระเงิน */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t p-4 shadow-lg">
+        <button
+          onClick={handleGoToPayment}
+          className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700"
+        >
+          ไปหน้าชำระเงิน
+        </button>
+      </div>
+
 
       {/* Modal สำหรับ Cancel */}
       {cancelOrder && (

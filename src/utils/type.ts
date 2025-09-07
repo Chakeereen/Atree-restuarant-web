@@ -57,8 +57,8 @@ export interface Orders {
   orderNo: number;
   tableNo: number;
   serviceID: number;
-  dateTime: Date;
-  updateAt: Date;
+  dateTime: string;
+  updateAt: string;
   role: string;
 
   table?: TableNo;
