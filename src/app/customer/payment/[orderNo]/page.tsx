@@ -1,10 +1,12 @@
 'use client'
 
 import { getPaymentDetails } from "@/action/customer/PaymentAction";
+import PaymentModal from "@/components/common/customer/Payments/PaymentsModal";
 import { OrderDetail } from "@/utils/type";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 
 export default function PaymentPage() {
     const params = useParams();
@@ -12,6 +14,7 @@ export default function PaymentPage() {
 
     const [payments, setPayments] = useState<OrderDetail[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     const fetchPayments = async () => {
         if (!orderNo) return;
@@ -30,16 +33,20 @@ export default function PaymentPage() {
     }, []);
 
     const totalPrice = payments.reduce((acc, item) => acc + Number(item.totalCost), 0);
+    const orderInfo = payments[0]?.order;
+
+    const handlePay = (method: "CASH" | "PROMPTPAY") => {
+        setShowModal(false);
+        toast.success(`ชำระเงินเรียบร้อยแล้ว ด้วยวิธี: ${method}, จำนวนเงิน: ${totalPrice} บาท`);
+        // TODO: เรียก API บันทึก Payment
+    }
 
     if (loading) return <p className="text-center mt-4">กำลังโหลดข้อมูล...</p>;
     if (payments.length === 0) return <p className="text-center mt-4">ไม่มีรายการสั่งอาหาร</p>;
 
-    // ใช้ element แรกเพื่อดึง order info
-    const orderInfo = payments[0]?.order;
-
     return (
         <div className="p-6 max-w-md mx-auto bg-white shadow-lg rounded-lg border border-gray-200">
-            {/* Header ใบเสร็จ */}
+            {/* Header */}
             <div className="text-center mb-6">
                 <h1 className="text-2xl font-bold">ใบเสร็จร้านอาหาร ATREE</h1>
                 <p>Order No: <span className="font-semibold">{orderInfo?.orderNo}</span></p>
@@ -76,15 +83,36 @@ export default function PaymentPage() {
             {/* ปุ่มชำระเงิน */}
             <button
                 className="mt-6 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                onClick={() => alert("ชำระเงินเรียบร้อยแล้ว")}
+                onClick={() => setShowModal(true)}
             >
                 ชำระเงิน
             </button>
 
-            {/* Footer เล็กๆ */}
+            {/* Footer */}
             <div className="text-center text-gray-400 text-sm mt-4">
                 ขอบคุณที่ใช้บริการ
             </div>
+
+            {/* Modal */}
+            {showModal && (
+                <div>
+                    {/* ปุ่มเปิด modal */}
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={() => setShowModal(true)}
+                    >
+                        ชำระเงิน
+                    </button>
+
+                    {/* Modal */}
+                    <PaymentModal
+                        isOpen={showModal}
+                        totalPrice={totalPrice}
+                        onClose={() => setShowModal(false)}
+                        onPay={handlePay}
+                    />
+                </div>
+            )}
         </div>
     );
 }
