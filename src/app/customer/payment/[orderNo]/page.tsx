@@ -41,7 +41,7 @@ export default function PaymentPage() {
         <div className="p-6 max-w-md mx-auto bg-white shadow-lg rounded-lg border border-gray-200">
             {/* Header ใบเสร็จ */}
             <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold">ใบเสร็จร้านอาหาร</h1>
+                <h1 className="text-2xl font-bold">ใบเสร็จร้านอาหาร ATREE</h1>
                 <p>Order No: <span className="font-semibold">{orderInfo?.orderNo}</span></p>
                 <p>โต๊ะ: <span className="font-semibold">{orderInfo?.tableNo}</span></p>
                 <p>วันที่: <span className="font-semibold">{orderInfo?.dateTime}</span></p>
