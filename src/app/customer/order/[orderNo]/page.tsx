@@ -37,12 +37,6 @@ export default function OrderDetailPage() {
       return;
     }
 
-    // ✅ สมมติให้สถานะที่พร้อมชำระคือ ordering
-    const firstOrder = orderDetails[0];
-    if (firstOrder.track?.trackStateName !== "ordering") {
-      alert("ไม่สามารถไปหน้าชำระเงินได้ เนื่องจากออเดอร์ไม่อยู่ในสถานะที่สามารถชำระได้");
-      return;
-    }
 
     // ✅ ถ้าผ่านทุกเงื่อนไข ให้ไปหน้าชำระเงิน
     router.push(`/customer/payment/${orderNo}`);

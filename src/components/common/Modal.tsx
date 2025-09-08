@@ -17,15 +17,15 @@ export default function Modal({ children, isOpen, onClose }: ModalProps) {
 
       {/* กล่อง Modal */}
       <div className="relative bg-white rounded-2xl shadow-lg w-[600px] max-h-[90vh] overflow-y-auto p-6 z-10">
+        {/* ปุ่มปิด */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 bg-gray-300 hover:bg-gray-400 text-black px-3 py-1 rounded-full"
+        >
+          ✕
+        </button>
+
         {children}
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={onClose}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            ปิด
-          </button>
-        </div>
       </div>
     </div>
   );

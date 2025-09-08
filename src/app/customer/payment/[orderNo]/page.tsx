@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-
 export default function PaymentPage() {
     const params = useParams();
     const orderNo = Number(params.orderNo);
@@ -37,9 +36,11 @@ export default function PaymentPage() {
 
     const handlePay = (method: "CASH" | "PROMPTPAY") => {
         setShowModal(false);
-        toast.success(`ชำระเงินเรียบร้อยแล้ว ด้วยวิธี: ${method}, จำนวนเงิน: ${totalPrice} บาท`);
-        // TODO: เรียก API บันทึก Payment
-    }
+        if (method === "CASH") {
+            toast.success(`ชำระเงินเรียบร้อยแล้ว ด้วยวิธี: เงินสด, จำนวนเงิน: ${totalPrice} บาท`);
+            // TODO: เรียก API บันทึก Payment
+        }
+    };
 
     if (loading) return <p className="text-center mt-4">กำลังโหลดข้อมูล...</p>;
     if (payments.length === 0) return <p className="text-center mt-4">ไม่มีรายการสั่งอาหาร</p>;
@@ -95,23 +96,13 @@ export default function PaymentPage() {
 
             {/* Modal */}
             {showModal && (
-                <div>
-                    {/* ปุ่มเปิด modal */}
-                    <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        onClick={() => setShowModal(true)}
-                    >
-                        ชำระเงิน
-                    </button>
-
-                    {/* Modal */}
-                    <PaymentModal
-                        isOpen={showModal}
-                        totalPrice={totalPrice}
-                        onClose={() => setShowModal(false)}
-                        onPay={handlePay}
-                    />
-                </div>
+                <PaymentModal
+                    isOpen={showModal}
+                    totalPrice={totalPrice}
+                    orderNo={orderNo}
+                    onClose={() => setShowModal(false)}
+                    onPay={handlePay}
+                />
             )}
         </div>
     );
