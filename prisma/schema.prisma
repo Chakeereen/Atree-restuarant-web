@@ -130,11 +130,13 @@ model Payment {
   dateTime  DateTime      @default(now())
   updateAt  DateTime      @updatedAt
   status    PaymentStatus // enum แทน paymentConfirm
-  staffID   String
+  staffID   String?
   methodID  Int
+  image     String?
+  fileID   String?
 
   order  Orders    @relation(fields: [orderNo], references: [orderNo])
-  staff  Staff     @relation(fields: [staffID], references: [staffID])
+  staff  Staff?     @relation(fields: [staffID], references: [staffID])
   method PayMethod @relation(fields: [methodID], references: [methodID])
 }
 

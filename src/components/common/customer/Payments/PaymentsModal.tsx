@@ -3,8 +3,8 @@
 import { getPromptPayQRCode } from "@/action/customer/PaymentAction";
 import Modal from "../../Modal";
 import { useEffect, useState } from "react";
-
-
+import { Download } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface PaymentModalProps {
     totalPrice: number;
@@ -16,12 +16,14 @@ interface PaymentModalProps {
 
 export default function PaymentModal({
     totalPrice,
+    orderNo,
     isOpen,
     onClose,
     onPay,
 }: PaymentModalProps) {
     const [step, setStep] = useState<"SELECT" | "QR">("SELECT");
     const [qr, setQr] = useState<string>("");
+    const router = useRouter();
 
     useEffect(() => {
         if (step === "QR") {
@@ -32,6 +34,14 @@ export default function PaymentModal({
                 .catch(err => console.error(err));
         }
     }, [step, totalPrice]);
+
+    // ฟังก์ชันไปหน้ารอการชำระเงิน
+    const goToWaitingPage = (method: "CASH" | "PROMPTPAY") => {
+        onPay(method); // เรียก callback ให้ parent handle ด้วย
+        router.push(
+            `/customer/payment/waiting?orderNo=${orderNo}&amount=${totalPrice}&method=${method}`
+        );
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -46,7 +56,7 @@ export default function PaymentModal({
                     <div className="flex flex-col gap-3 items-center">
                         <button
                             className="bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600 w-auto"
-                            onClick={() => onPay("CASH")}
+                            onClick={() => goToWaitingPage("CASH")}
                         >
                             เงินสด
                         </button>
@@ -68,20 +78,31 @@ export default function PaymentModal({
                         <span className="font-semibold">{totalPrice} บาท</span>
                     </p>
                     {qr ? (
-                        <div>
+                        <div className="flex flex-col items-center gap-4">
+                            {/* QR CODE */}
                             <img
                                 src={qr}
                                 alt="QR Code"
                                 className="mx-auto border rounded shadow-md mb-4"
                             />
+
                             {/* ปุ่มดาวน์โหลด */}
                             <a
                                 href={qr}
                                 download={`PromptPay_${totalPrice}.png`}
-                                className="bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600 inline-block"
+                                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 flex items-center gap-2"
                             >
+                                <Download className="w-4 h-4" />
                                 ดาวน์โหลด QR
                             </a>
+
+                            {/* ปุ่มถัดไป */}
+                            <button
+                                onClick={() => goToWaitingPage("PROMPTPAY")}
+                                className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600 w-full max-w-[200px]"
+                            >
+                                ถัดไป
+                            </button>
                         </div>
                     ) : (
                         <p>กำลังโหลด QR Code...</p>
