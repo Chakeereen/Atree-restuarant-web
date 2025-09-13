@@ -100,6 +100,7 @@ export default function PaymentPage() {
                     isOpen={showModal}
                     totalPrice={totalPrice}
                     orderNo={orderNo}
+                    tableNo={Number(orderInfo?.tableNo)}
                     onClose={() => setShowModal(false)}
                     onPay={handlePay}
                 />

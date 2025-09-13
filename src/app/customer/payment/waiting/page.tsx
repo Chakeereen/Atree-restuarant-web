@@ -2,13 +2,14 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { createPayment } from "@/action/customer/PaymentAction";
+import { createPayment, destroyCookie } from "@/action/customer/PaymentAction";
 
 export default function PaymentWaitingPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const orderNo = Number(searchParams.get("orderNo"));
     const totalPrice = Number(searchParams.get("amount"));
+    const tableNo = Number(searchParams.get("tableNo"));
     const method = searchParams.get("method");
 
     const [slip, setSlip] = useState<File | null>(null);
@@ -37,6 +38,13 @@ export default function PaymentWaitingPage() {
 
             if (result.success) {
                 setSubmitted(true);
+
+                await destroyCookie();
+
+                // ✅ redirect ไป bill พร้อมส่งค่า query
+                router.push(
+                    `/public/bill/?totalCost=${totalPrice}&tableNo=${tableNo}&paymentMethod=${method}&orderNo=${orderNo}`
+                );
             } else {
                 alert("เกิดข้อผิดพลาด: " + result.error);
             }

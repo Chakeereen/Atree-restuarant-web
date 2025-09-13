@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 interface PaymentModalProps {
     totalPrice: number;
     orderNo: number;
+    tableNo: number;
     isOpen: boolean;
     onClose: () => void;
     onPay: (method: "CASH" | "PROMPTPAY") => void;
@@ -17,6 +18,7 @@ interface PaymentModalProps {
 export default function PaymentModal({
     totalPrice,
     orderNo,
+    tableNo,
     isOpen,
     onClose,
     onPay,
@@ -39,7 +41,7 @@ export default function PaymentModal({
     const goToWaitingPage = (method: "CASH" | "PROMPTPAY") => {
         onPay(method); // เรียก callback ให้ parent handle ด้วย
         router.push(
-            `/customer/payment/waiting?orderNo=${orderNo}&amount=${totalPrice}&method=${method}`
+            `/customer/payment/waiting?orderNo=${orderNo}&amount=${totalPrice}&method=${method}&tableNo=${tableNo}`
         );
     };
 
@@ -47,6 +49,7 @@ export default function PaymentModal({
         <Modal isOpen={isOpen} onClose={onClose}>
             {step === "SELECT" && (
                 <div className="text-center">
+                    <h1>table No {tableNo}</h1>
                     <h2 className="text-xl font-bold mb-4">เลือกวิธีชำระเงิน</h2>
                     <p className="mb-4">
                         จำนวนเงินที่ต้องชำระ:{" "}

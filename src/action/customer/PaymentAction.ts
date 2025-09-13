@@ -1,6 +1,10 @@
 'use server'
+
+import { cookies } from "next/headers";
+
 const baseUrl = process.env.API_URL as string;
 const phone = process.env.NEXT_PUBLIC_PHONE;
+
 
 
 export const getPaymentDetails = async (orderNo: number) => {
@@ -99,3 +103,32 @@ export const createPayment = async ({
     return { success: false, error: err.message };
   }
 };
+
+export async function destroyCookie(){
+   (await cookies()).set("accessToken", "", {
+    expires: new Date(0), // ทำให้หมดอายุทันที
+    path: "/",            // ต้องกำหนด path เดียวกับตอนที่สร้าง
+  });
+}
+
+export async function checkPaid(orderNo: number) {
+  try {
+    const res = await fetch(`${baseUrl}/api/customer/payment/paymentDetail?orderNo=${orderNo}`, {
+      method: "GET",
+      cache: "no-store", // กัน cache
+    });
+
+    if (!res.ok) return false;
+
+    const data = await res.json();
+
+    // ถ้า API คืนค่า null = ยังไม่จ่าย
+    if (!data) return false;
+
+    // ถ้ามีค่า = จ่ายแล้ว
+    return true;
+  } catch (error) {
+    console.error("checkPaid error:", error);
+    return false;
+  }
+}
