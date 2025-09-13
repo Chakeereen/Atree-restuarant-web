@@ -14,7 +14,12 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, data: payments });
+      const formatted = payments.map((p) => ({
+      ...p,
+      totalCost: p.totalCost ? Number(p.totalCost) : null,
+    }));
+
+    return NextResponse.json({ success: true, data: formatted });
   } catch (err: any) {
     console.error("Payment GET error:", err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
