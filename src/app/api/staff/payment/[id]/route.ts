@@ -20,7 +20,21 @@ export async function PATCH(
       data: { status: "PAID" },
     });
 
-    return NextResponse.json({ success: true, data: updatedPayment });
+    const getOrderNo = await prisma.payment.findUnique({
+      where: { paymentNo: paymentNo },
+      select: {
+        orderNo: true,
+      }
+    });
+
+    const orderNo = Number(getOrderNo?.orderNo);
+
+    const updateOrder = await prisma.orders.update({
+      where: { orderNo: orderNo },
+      data: { serviceID: 2 }
+    });
+
+    return NextResponse.json({ success: true, data: updatedPayment, updateOrder });
   } catch (err: any) {
     console.error("Payment PATCH error:", err);
     return NextResponse.json(
