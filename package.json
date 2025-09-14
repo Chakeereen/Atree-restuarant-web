@@ -22,6 +22,7 @@
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "firebase-admin": "^13.5.0",
     "imagekit": "^6.0.0",
     "imagekitio-react": "^4.3.0",
     "jose": "^6.1.0",
