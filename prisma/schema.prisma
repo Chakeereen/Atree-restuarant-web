@@ -133,10 +133,10 @@ model Payment {
   staffID   String?
   methodID  Int
   image     String?
-  fileID   String?
+  fileID    String?
 
   order  Orders    @relation(fields: [orderNo], references: [orderNo])
-  staff  Staff?     @relation(fields: [staffID], references: [staffID])
+  staff  Staff?    @relation(fields: [staffID], references: [staffID])
   method PayMethod @relation(fields: [methodID], references: [methodID])
 }
 
@@ -169,6 +169,7 @@ model Staff {
 
   payments  Payment[]
   loginLogs LoginLog[]
+  FcmToken  FcmToken[]
 }
 
 model LoginLog {
@@ -178,4 +179,16 @@ model LoginLog {
   dateTime    DateTime @default(now())
 
   staff Staff @relation(fields: [staffID], references: [staffID])
+}
+
+model FcmToken {
+  id        Int      @id @default(autoincrement())
+  staffID   String
+  token     String
+  createdAt DateTime @default(now())
+
+  // Relation กับ Staff
+  staff Staff @relation(fields: [staffID], references: [staffID])
+
+  @@index([staffID])
 }

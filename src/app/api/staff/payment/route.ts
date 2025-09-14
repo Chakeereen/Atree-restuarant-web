@@ -19,6 +19,8 @@ export async function GET(req: NextRequest) {
       totalCost: p.totalCost ? Number(p.totalCost) : null,
     }));
 
+    console.log(formatted)
+
     return NextResponse.json({ success: true, data: formatted });
   } catch (err: any) {
     console.error("Payment GET error:", err);

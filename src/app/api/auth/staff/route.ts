@@ -5,10 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { generateAccessToken, generateRefreshToken } from "@/utils/่jwt";
 
 
-
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, fcmToken } = await req.json(); // <-- รับ fcmToken ด้วย
 
     // หา staff จาก DB
     const staff = await prisma.staff.findUnique({ where: { email } });
@@ -23,8 +22,25 @@ export async function POST(req: NextRequest) {
     }
 
     // สร้าง tokens
-    const accessToken = generateAccessToken(staff.staffID,staff.role); // <-- ใช้ staffID
+    const accessToken = generateAccessToken(staff.staffID, staff.role);
     const refreshToken = generateRefreshToken(staff.staffID);
+
+    // ✅ บันทึก FCM Token
+    if (fcmToken) {
+      // ตรวจสอบว่ามี token นี้อยู่แล้วหรือไม่
+      const existing = await prisma.fcmToken.findFirst({
+        where: { staffID: staff.staffID, token: fcmToken },
+      });
+
+      if (!existing) {
+        await prisma.fcmToken.create({
+          data: {
+            staffID: staff.staffID,
+            token: fcmToken,
+          },
+        });
+      }
+    }
 
     // ตอบกลับ Access Token + เก็บ Refresh Token ใน Cookie
     const res = NextResponse.json({

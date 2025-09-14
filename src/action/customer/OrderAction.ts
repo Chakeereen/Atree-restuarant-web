@@ -1,37 +1,41 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import {OrderDetail } from '@/utils/type';
+
 
 
 
 const baseUrl = process.env.API_URL as string;
 
-export async function submitOrder(orderInfo: { orderNo: number; tableNo: number }, cart: OrderDetail[]) {
 
-  console.log(cart);
-
+export async function submitOrder(
+  orderInfo: { orderNo: number; tableNo: number },
+  cart: {
+    menuID: number;
+    amount: number;
+    price: number;
+    totalCost: number;
+    trackOrderID: number;
+    description?: string;
+    place: string;
+  }[]
+) {
   if (cart.length === 0) {
-    console.log("EMPTY")
-    return
+    console.log("EMPTY CART");
+    return { success: false, error: "Cart is empty" };
   }
-  // ตัวอย่าง: บันทึก Order ลง DB
+  console.log(cart);
   try {
-    await prisma.orderDetail.createMany({
-      data: cart.map(item => ({
-        orderNo: orderInfo.orderNo,
-        menuID: item.menuID,
-        amount: item.amount,
-        price: item.price,
-        totalCost: item.totalCost,
-        trackOrderID: item.trackOrderID,
-        description: item.description || '',
-        place: item.place,
-      })),
+    const res = await fetch(`${baseUrl}/api/customer/createOrder`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderInfo, cart }),
     });
-  } catch (err) {
-    console.error("Error saving order:", err);
-    throw new Error("Order submission failed");
+
+    const data = await res.json();
+    return data;
+  } catch (err: any) {
+    console.error("Error calling createOrder API:", err);
+    return { success: false, error: err.message };
   }
 }
 
