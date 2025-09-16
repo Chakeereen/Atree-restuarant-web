@@ -3,13 +3,10 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { MenuLists, MenuType, OrderDetail } from '@/utils/type';
 import MenuList from '@/components/common/customer/MenuList';
 import CartFooter from '@/components/common/customer/CartFooter';
-
-import { toast } from 'sonner';
 import HoldOrderPage from '@/components/common/customer/ConfirmOrder';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { submitOrder } from '@/action/customer/OrderAction';
-
-
 
 
 interface OrderPageProps {
@@ -29,12 +26,11 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState<number | null>(null);
+  const [isHold, setIsHold] = useState(false);
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const menuRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
-  const [isHold, setIsHold] = useState(false);
-
 
   // Update underline position on tab change
   useEffect(() => {
@@ -77,14 +73,11 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
           totalCost: price,
           name: menu.name,
           image: menu.image,
-          place: 'กินที่ร้าน',      // default
-          description: '',          // default
+          place: 'กินที่ร้าน',
+          description: '',
         },
       ];
-
-
     });
-
   };
 
   const handleRemoveItem = (menuID: number) => {
@@ -112,15 +105,10 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
     [cart]
   );
 
-
-
-
   const handleTabClick = (typeID: number | null) => {
     setSelectedType(typeID);
     const el = menuRefs.current[typeID ?? 'all'];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   useEffect(() => {
@@ -149,16 +137,13 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
   }, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen font-sans">
-      <div
-        className="mx-auto min-h-screen bg-white shadow-lg 
-                 w-full sm:w-[400px] md:w-[700px] lg:w-[900px] xl:w-[1100px] 
-                 transition-all duration-300 flex flex-col"
-      >
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans transition-colors">
+      <div className="mx-auto bg-white dark:bg-gray-800 shadow-lg w-full transition-all duration-300 flex flex-col rounded-lg">
+
         {isHold ? (
           <HoldOrderPage
             cart={cart}
-            setCart={setCart}  // ✅ ต้องส่ง setCart มา
+            setCart={setCart}
             totalCost={totalCost}
             isSubmitting={isSubmitting}
             onBack={() => setIsHold(false)}
@@ -167,7 +152,7 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
               try {
                 if (cart.length === 0) {
                   toast.warning('กรุณาเลือกเมนูก่อน');
-                  setIsHold(false); // 🔹 กลับไปหน้าเลือกเมนู
+                  setIsHold(false);
                   return;
                 }
                 await submitOrder(orderInfo, cart);
@@ -183,28 +168,23 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
             }}
           />
         ) : (
-          // 🟡 หน้าเลือกเมนูปกติ
           <>
-            <header className="p-4 border-b sticky top-0 bg-white z-20 flex justify-between items-center">
-              <div>
-                <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderInfo.tableNo}</h1>
-                <p className="text-sm text-gray-500">Order #{orderInfo.orderNo}</p>
-              </div>
+            {/* Header */}
+          
 
-              {/* ปุ่มไปหน้า OrderDetail */}
-              <button
-                onClick={() => router.push(`/customer/order/${orderInfo.orderNo}`)}
-                className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+            {/* Tabs */}
+            <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+              <div
+                ref={tabsRef}
+                className="flex gap-2 overflow-x-auto p-3 scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-200 dark:scrollbar-track-gray-700 relative"
               >
-                รายละเอียด
-              </button>
-            </header>
-
-            <div className="sticky top-[64px] z-10 bg-white border-b">
-              <div ref={tabsRef} className="flex gap-2 overflow-x-auto p-3 scrollbar-hide relative">
                 <button
                   data-id="all"
-                  className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === null ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                    selectedType === null
+                      ? 'text-orange-600 dark:text-orange-400 font-semibold'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
                   onClick={() => handleTabClick(null)}
                 >
                   All
@@ -213,20 +193,25 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
                   <button
                     key={type.typeID}
                     data-id={type.typeID}
-                    className={`px-3 py-3 rounded whitespace-nowrap ${selectedType === type.typeID ? 'text-blue-600 font-semibold' : 'text-gray-600'}`}
+                    className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                      selectedType === type.typeID
+                        ? 'text-orange-600 dark:text-orange-400 font-semibold'
+                        : 'text-gray-600 dark:text-gray-300'
+                    }`}
                     onClick={() => handleTabClick(type.typeID)}
                   >
                     {type.name}
                   </button>
                 ))}
                 <div
-                  className="absolute bottom-0 h-1 bg-blue-500 transition-all duration-300"
+                  className="absolute bottom-0 h-1 bg-orange-500 dark:bg-orange-400 rounded transition-all duration-300"
                   style={{ left: underlineStyle.left, width: underlineStyle.width }}
                 />
               </div>
             </div>
 
-            <main className="flex-1 overflow-y-auto p-4">
+            {/* Main content */}
+            <main className="p-4">
               <div ref={(el) => { menuRefs.current['all'] = el }} />
 
               {menuTypes.map((type) => {
@@ -238,10 +223,10 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
                     key={type.typeID}
                     ref={(el) => { menuRefs.current[type.typeID] = el }}
                     style={{ scrollMarginTop: '175px' }}
-                    className="bg-gray-50 rounded-lg p-4 mb-4"
+                    className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-6 shadow-sm"
                   >
-                    <h2 className="text-lg font-semibold mb-3">{type.name}</h2>
-                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <h2 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">{type.name}</h2>
+                    <div className="flex flex-col w-full">
                       <MenuList
                         menus={menusOfType}
                         cart={cart}
@@ -259,7 +244,7 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
                 totalItems={totalItems}
                 totalCost={totalCost}
                 isSubmitting={isSubmitting}
-                onSubmit={() => setIsHold(true)} // 🟡 เปลี่ยนตรงนี้
+                onSubmit={() => setIsHold(true)}
               />
             )}
           </>
@@ -267,6 +252,4 @@ export default function OrderClientPage({ orderInfo, menuLists, menuTypes }: Ord
       </div>
     </div>
   );
-
-
 }

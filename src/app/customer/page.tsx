@@ -1,10 +1,10 @@
-import { cookies } from "next/headers";
 
-import { getMenuAll } from "@/action/admin/MenuAction";
+import OrderClientPage from './order/OrderClientPage';
+import { cookies } from "next/headers";
 import { getPayloadFromToken } from "@/utils/่jwt";
-import OrderClientPage from "./order/OrderClientPage";
-import { MenuLists, MenuType } from "@/utils/type";
 import { getMenuData, getMenuType } from "@/action/customer/OrderAction";
+import { MenuLists, MenuType } from "@/utils/type";
+import OrderHeader from '@/components/common/customer/OrderHeader/OrderHeader';
 
 export default async function CustomerPage() {
   const cookieStore = cookies();
@@ -20,22 +20,18 @@ export default async function CustomerPage() {
     );
   }
 
-  
-
-
-
-  // ดึง menuLists
   const menuRes = await getMenuData();
   const menuLists: MenuLists[] = menuRes.success ? (menuRes.data as MenuLists[]) : [];
 
-  // ดึง menuTypes
   const typeRes = await getMenuType();
   const menuTypes: MenuType[] = typeRes.success ? (typeRes.data as MenuType[]) : [];
-  console.log(menuTypes)
 
   return (
-    <main>
-      
+    <main className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+      {/* Header แสดงทุกหน้า */}
+      <OrderHeader orderNo={Number(payload.orderNo)} tableNo={Number(payload.tableNo)} />
+
+      {/* หน้าเมนู */}
       <OrderClientPage
         orderInfo={{ orderNo: Number(payload.orderNo), tableNo: Number(payload.tableNo) }}
         menuLists={menuLists}

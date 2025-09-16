@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const Page = () => {
+function BillContent() {
   const params = useSearchParams();
   const orderNo = Number(params.get("orderNo"));
   const totalPrice = Number(params.get("totalCost"));
@@ -17,7 +17,6 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [isPaid, setIsPaid] = useState(false);
 
-  // ฟังก์ชันดึง bill
   const fetchBill = async () => {
     if (!orderNo) return;
     setLoading(true);
@@ -36,7 +35,6 @@ const Page = () => {
     }
   };
 
-  // Polling checkPaid
   useEffect(() => {
     if (!orderNo) return;
 
@@ -46,25 +44,23 @@ const Page = () => {
       try {
         const paid = await checkPaid(orderNo);
         if (paid) {
-          clearInterval(interval); // หยุด polling
+          clearInterval(interval);
           setIsPaid(true);
-          fetchBill(); // โหลด bill หลังจากจ่ายแล้ว
+          fetchBill();
         }
       } catch (err) {
         console.error("checkPaid error:", err);
       }
     };
 
-    pollPaid(); // check ครั้งแรกทันที
-    interval = setInterval(pollPaid, 5000); // check ทุก 5 วิ
+    pollPaid();
+    interval = setInterval(pollPaid, 5000);
 
     return () => clearInterval(interval);
   }, [orderNo]);
 
-  // แสดงข้อความตามสถานะ
   if (!isPaid) {
     return <p className="text-center mt-4">กรุณารอพนักงานยืนยันการชำระเงินสักครู่...</p>;
-    
   }
 
   if (loading) {
@@ -92,6 +88,14 @@ const Page = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Page;
+import { Suspense } from "react";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<p className="text-center mt-4">Loading...</p>}>
+      <BillContent />
+    </Suspense>
+  );
+}

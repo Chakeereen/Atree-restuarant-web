@@ -16,7 +16,7 @@ export default function MenuList({ menus, cart, onAdd, onRemove }: MenuListProps
   if (menus.length === 0) return <p className="text-gray-400 text-sm">ไม่มีเมนูในหมวดนี้</p>;
 
   return (
-    <div className="space-y-2">
+    <ul className="flex-1 overflow-y-auto space-y-2 p-2">
       {menus.map((menu) => (
         <MenuItem
           key={menu.menuID}
@@ -26,6 +26,7 @@ export default function MenuList({ menus, cart, onAdd, onRemove }: MenuListProps
           onRemove={() => onRemove(menu.menuID)}
         />
       ))}
-    </div>
+    </ul>
   );
 }
+
