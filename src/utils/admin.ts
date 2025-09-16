@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"; // import toaster
 
-const baseUrl = process.env.API_URL as string;
+const baseUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
 export const useLogoutAdmin = () => {
   const router = useRouter();
@@ -68,5 +68,5 @@ export const loginAdminAction = async (prevState: any, formData: FormData) => {
     console.error(error);
     return { success: false, message: "เกิดข้อผิดพลาดในการ login" };
   }
-  
+
 };
