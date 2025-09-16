@@ -48,21 +48,7 @@ export default function OrderDetailPage() {
   return (
     <>
       <div className="p-4 pb-20 space-y-4">
-        <header className="p-4 border-b sticky top-0 bg-white z-20 flex justify-between items-center">
-          <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-gray-800">โต๊ะ {orderDetails.at(0)?.order?.tableNo}</h1>
-            <p className="text-sm text-gray-500">Order #{orderNo}</p>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => router.back()}
-              className="bg-gray-200 text-gray-700 px-3 py-2 rounded hover:bg-gray-300"
-            >
-              ⬅ ย้อนกลับ
-            </button>
-          </div>
-        </header>
+   
 
         <div className="p-4 space-y-6">
           {/* 🔹 เมนูที่กำลังดำเนินการ */}

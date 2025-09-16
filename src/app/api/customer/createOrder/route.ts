@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    //console.log(cart)
 
     // บันทึก orderDetail ลง DB
     await prisma.orderDetail.createMany({
