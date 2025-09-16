@@ -185,12 +185,12 @@ model LoginLog {
 
 model FcmToken {
   id        Int      @id @default(autoincrement())
-  staffID   String
+  staffID   String?
   token     String
   createdAt DateTime @default(now())
 
   // Relation กับ Staff
-  staff Staff @relation(fields: [staffID], references: [staffID])
+  staff Staff? @relation(fields: [staffID], references: [staffID])
 
   @@index([staffID])
 }
