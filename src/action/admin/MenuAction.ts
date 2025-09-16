@@ -7,39 +7,21 @@ const API_BASE = process.env.API_URL || "";
 
 export const createMenuAction = async (prevState: any, formData: FormData) => {
   try {
-    const file = formData.get("image") as File | null;
-    let imageUrl: string | null = null;
-    let fileId: string | null = null;
+    // ดึงค่า image + fileID จาก hidden input
+    const imageUrl = formData.get("image") as string | null;
+    const fileId = formData.get("fileID") as string | null;
+
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const typeID = Number(formData.get("menuType"));
 
-    if (!file || !name || !price || !typeID) {
+    if (!name || !price || !typeID) {
       return { message: "กรอกข้อมูลไม่สมบูรณ์", success: false };
     }
 
-    // Upload image
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const uploadForm = new FormDataNode();
-    uploadForm.append("file", buffer, { filename: file.name });
-
-    const uploadRes = await fetch(`${API_BASE}/api/admin/menu/image`, {
-      method: "POST",
-      body: uploadForm as any,
-      headers: uploadForm.getHeaders(),
-    });
-    const uploadData = await uploadRes.json();
-
-    if (!uploadRes.ok || !uploadData.success) {
-      return { message: uploadData.error || "Image upload failed", success: false };
-    }
-
-    imageUrl = uploadData.url;
-    fileId = uploadData.fileId;
-
     // สร้าง menu
     const rawFormData = { name, price, image: imageUrl, fileID: fileId, typeID };
+
     const response = await fetch(`${API_BASE}/api/admin/menu`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -47,7 +29,9 @@ export const createMenuAction = async (prevState: any, formData: FormData) => {
     });
 
     const result = await response.json();
-    if (!response.ok) return { message: result.error || "Failed to create menu", success: false };
+    if (!response.ok) {
+      return { message: result.error || "Failed to create menu", success: false };
+    }
 
     return { message: "Menu created successfully!", success: true };
   } catch (error: any) {
@@ -56,52 +40,46 @@ export const createMenuAction = async (prevState: any, formData: FormData) => {
   }
 };
 
+
 // แก้ไขเมนู
+
 export const editMenuAction = async (prevState: any, formData: FormData) => {
   try {
     const menuID = formData.get("menuID") as string;
-    const oldImage = formData.get("oldImage") as string | null;
+    const name = formData.get("name") as string;
+    const price = Number(formData.get("price"));
+    const typeID = Number(formData.get("menuType"));
+
+    // ดึงค่า image + fileID ใหม่จาก ImageUploader
+    const imageUrl = formData.get("image") as string | null;
+    const fileId = formData.get("fileID") as string | null;
+
+    // ดึงค่า oldFileID (รูปเก่า) เพื่อลบก่อน
     const oldFileId = formData.get("oldFileID") as string | null;
 
-    const file = formData.get("image") as File | null;
-    let imageUrl = oldImage;
-    let fileId = oldFileId;
+    if (!name || !price || !typeID) {
+      return { message: "กรอกข้อมูลไม่สมบูรณ์", success: false };
+    }
 
-    if (file && file.size > 0) {
-      // ลบไฟล์เก่า
-      if (oldFileId) {
+    // ลบรูปเก่า (ถ้ามี)
+    if (oldFileId && oldFileId !== fileId) {
+      try {
         await fetch(`${API_BASE}/api/admin/menu/image`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileId: oldFileId }),
         });
+      } catch (err) {
+        console.warn("Failed to delete old image:", err);
       }
-
-      // อัปโหลดไฟล์ใหม่
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const uploadForm = new FormDataNode();
-      uploadForm.append("file", buffer, { filename: file.name });
-
-      const uploadRes = await fetch(`${API_BASE}/api/admin/menu/image`, {
-        method: "POST",
-        body: uploadForm as any,
-        headers: uploadForm.getHeaders(),
-      });
-
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok || !uploadData.success) throw new Error(uploadData.error || "Image upload failed");
-
-      imageUrl = uploadData.url;
-      fileId = uploadData.fileId;
     }
 
     const rawFormData = {
-      name: formData.get("name"),
-      price: Number(formData.get("price")),
+      name,
+      price,
       image: imageUrl,
       fileID: fileId,
-      typeID: Number(formData.get("menuType")),
+      typeID,
     };
 
     const response = await fetch(`${API_BASE}/api/admin/menu/${menuID}`, {

@@ -1,15 +1,14 @@
 "use client";
 
 import { SubmitButton } from "@/components/common/admin/Form/Button";
-
 import FormInput from "@/components/common/admin/Form/FormInput";
 import ImageInput from "@/components/common/admin/Form/ImageInput";
-
 import { FormContainer } from "../../../Form/FormContainer";
 import { useRouter } from "next/navigation";
 import { MenuCategoryInput } from "../../../Form/MenuCategoryInput";
 import { MenuLists } from "@/utils/type";
 import { editMenuAction } from "@/action/admin/MenuAction";
+import ImageUploader from "../../../Form/ImageUploader";
 
 
 interface EditMenuProps {
@@ -36,8 +35,7 @@ export const EditMenu = ({ menu, onSuccess }: EditMenuProps) => {
           <FormInput name="price" label="Menu Price" type="number" defaultValue={menu.price?.toString() ?? ""} />
           <MenuCategoryInput defaultValue={menu.typeID}/>
           <input type="hidden" name="oldFileID" value={menu.fileID} />
-          <input type="hidden" name="oldImage" value={menu.image} />
-          <ImageInput />
+          <ImageUploader />
           <SubmitButton text="update menu" />
         </FormContainer>
       </div>
