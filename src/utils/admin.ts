@@ -2,13 +2,15 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"; // import toaster
 
+const baseUrl = process.env.API_URL as string;
+
 export const useLogoutAdmin = () => {
   const router = useRouter();
 
   const logoutAdmin = async () => {
     try {
       // 1. เรียก API logout เพื่อลบ cookie
-      const res = await fetch("http://localhost:3000/api/auth/admin/logout", {
+      const res = await fetch(`${baseUrl}/api/auth/admin/logout`, {
         method: "POST",
       });
 
@@ -41,7 +43,7 @@ export const loginAdminAction = async (prevState: any, formData: FormData) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const res = await fetch('http://localhost:3000/api/auth/admin', {
+    const res = await fetch(`${baseUrl}/api/auth/admin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
