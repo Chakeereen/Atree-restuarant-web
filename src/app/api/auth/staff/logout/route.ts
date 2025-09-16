@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import {  } from "@/utils/่jwt";
-
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,21 +19,36 @@ export async function POST(req: NextRequest) {
         token: fcmToken,
       },
     });
-   
+
+    // ✅ บันทึก Log ว่า logout สำเร็จ
+    await prisma.loginLog.create({
+      data: {
+        staffID,
+        loginResult: "LOGOUT",
+      },
+    });
 
     // ลบ refreshToken cookie
     const res = NextResponse.json({ message: "Logout successful" });
-        res.cookies.set({
+    res.cookies.set({
       name: "refreshToken",
       value: "",
       path: "/",
       expires: new Date(0), // ทำให้หมดอายุ
     });
 
-
     return res;
   } catch (err: any) {
     console.error("Logout error:", err);
+
+    // ✅ บันทึก Log ว่ามี error ตอน logout
+    await prisma.loginLog.create({
+      data: {
+        staffID: "SYSTEM",
+        loginResult: `LOGOUT ERROR - ${err.message}`,
+      },
+    });
+
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
