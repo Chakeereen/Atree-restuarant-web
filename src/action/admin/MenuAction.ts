@@ -10,12 +10,12 @@ export const createMenuAction = async (prevState: any, formData: FormData) => {
     let imageUrl: string | null = null;
     let fileId: string | null = null;
     const name = formData.get("name");
-    const price= Number(formData.get("price"));
+    const price = Number(formData.get("price"));
     const typeID = Number(formData.get("menuType"))
     if (!file || !name || !price || !typeID) {
       return { message: "กรอกข้อมูลไม่สมบูรณ์", success: false };
     }
-    
+
 
     if (file) {
       const uploadForm = new FormData();
@@ -23,17 +23,18 @@ export const createMenuAction = async (prevState: any, formData: FormData) => {
 
       const uploadRes = await fetch(`${baseUrl}/api/admin/menu/image`, {
         method: "POST",
-        body: uploadForm,
+        body: uploadForm, // ไม่ต้อง set headers
       });
 
       const uploadData = await uploadRes.json();
-      if (!uploadRes.ok) {
+      if (!uploadRes.ok || !uploadData.success) {
         return { message: uploadData.error || "Image upload failed", success: false };
       }
 
       imageUrl = uploadData.url;
       fileId = uploadData.fileId;
     }
+
 
     const rawFormData = {
       name: formData.get("name"),
