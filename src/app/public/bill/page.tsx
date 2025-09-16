@@ -1,17 +1,18 @@
 'use client';
 
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { getPaymentDetails, checkPaid } from "@/action/customer/PaymentAction";
 import { OrderDetail } from "@/utils/type";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
-function BillContent() {
+export default function BillPage() {
   const params = useSearchParams();
   const orderNo = Number(params.get("orderNo"));
-  const totalPrice = Number(params.get("totalCost"));
   const tableNo = params.get("tableNo");
-  const method = params.get("paymentMethod");
+  let method = params.get("paymentMethod");
+  if (method === "CASH") method = "เงินสด";
+  else if (method === "PROMPTPAY") method = "พร้อมเพย์";
 
   const [bills, setBills] = useState<OrderDetail[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,11 +23,8 @@ function BillContent() {
     setLoading(true);
     try {
       const result = await getPaymentDetails(orderNo);
-      if (result.success) {
-        setBills(result.data);
-      } else {
-        toast.error(result.error);
-      }
+      if (result.success) setBills(result.data);
+      else toast.error(result.error);
     } catch (err) {
       console.error(err);
       toast.error("เกิดข้อผิดพลาดในการโหลดบิล");
@@ -37,7 +35,6 @@ function BillContent() {
 
   useEffect(() => {
     if (!orderNo) return;
-
     let interval: NodeJS.Timeout;
 
     const pollPaid = async () => {
@@ -55,47 +52,37 @@ function BillContent() {
 
     pollPaid();
     interval = setInterval(pollPaid, 5000);
-
     return () => clearInterval(interval);
   }, [orderNo]);
 
-  if (!isPaid) {
-    return <p className="text-center mt-4">กรุณารอพนักงานยืนยันการชำระเงินสักครู่...</p>;
-  }
-
-  if (loading) {
-    return <p className="text-center mt-4">กำลังโหลดข้อมูลบิล...</p>;
-  }
-
-  if (bills.length === 0) {
-    return <p className="text-center mt-4">ไม่มีรายการสั่งอาหาร</p>;
-  }
+  if (!isPaid) return <p className="text-center mt-4 text-gray-600">กรุณารอพนักงานยืนยันการชำระเงิน...</p>;
+  if (loading) return <p className="text-center mt-4 text-gray-600">กำลังโหลดข้อมูลบิล...</p>;
+  if (!bills.length) return <p className="text-center mt-4 text-gray-600">ไม่มีรายการสั่งอาหาร</p>;
 
   return (
-    <div>
-      <h1>orderNo {orderNo}</h1>
-      <h1>totalCost {totalPrice}</h1>
-      <h1>table NO {tableNo}</h1>
-      <h1>method {method}</h1>
-      <div className="space-y-4 border-t border-b py-4">
-        {bills.map((bill) => (
-          <div key={bill.detailNo}>
-            <p>
-              {bill.menu?.name} {bill.price} x {bill.amount} ฿{bill.totalCost}
-            </p>
-          </div>
-        ))}
+    <div className="max-w-md mx-auto mt-6">
+      <div className="bg-white shadow-lg rounded-lg border border-gray-200 p-6 text-gray-800">
+        <h1 className="text-2xl font-bold text-center">ร้านอาหาร ATREE</h1>
+        <p className="mt-2">Order No: {orderNo}</p>
+        <p>โต๊ะ: {tableNo}</p>
+        <p>วิธีชำระ: {method}</p>
+
+        <div className="border-t border-b py-4 mt-4">
+          {bills.map(b => (
+            <div key={b.detailNo} className="flex justify-between text-sm">
+              <span>{b.menu?.name} ({b.amount} x {b.price})</span>
+              <span>{b.totalCost} บาท</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-between font-bold text-lg mt-4">
+          <span>ราคารวมทั้งหมด</span>
+          <span>{bills.reduce((acc, b) => acc + Number(b.totalCost), 0)} บาท</span>
+        </div>
+
+        <div className="text-center text-gray-400 text-sm mt-4">ขอบคุณที่ใช้บริการ</div>
       </div>
     </div>
-  );
-}
-
-import { Suspense } from "react";
-
-export default function Page() {
-  return (
-    <Suspense fallback={<p className="text-center mt-4">Loading...</p>}>
-      <BillContent />
-    </Suspense>
   );
 }

@@ -1,11 +1,6 @@
 'use server';
 
-
-
-
-
 const baseUrl = process.env.API_URL as string;
-
 
 export async function submitOrder(
   orderInfo: { orderNo: number; tableNo: number },
@@ -154,3 +149,25 @@ export const cancelOrder = async (prevState: any, formData: FormData) => {
   }
 };
 
+export const endOrder = async (orderNo: number) => {
+  try {
+    const res = await fetch(`${baseUrl}/api/customer/end`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderNo }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      return { success: false, message: errorData.message || 'เกิดข้อผิดพลาด' };
+    }
+
+    const data = await res.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'เกิดข้อผิดพลาดในการเรียก API' };
+  }
+};

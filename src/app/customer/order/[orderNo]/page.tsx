@@ -15,142 +15,113 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [cancelOrder, setCancelOrder] = useState<OrderDetail | null>(null);
 
-  const fetchDetails = async () => {
+  const fetchDetails = async (): Promise<OrderDetail[]> => {
     setLoading(true);
     const result = await getOrderDetails(orderNo);
     if (result.success) {
       setOrderDetails(result.data);
+      setLoading(false);
+      return result.data;
     } else {
+      setLoading(false);
       toast.error(result.error);
+      return [];
     }
-    setLoading(false);
   };
 
   useEffect(() => {
     fetchDetails();
   }, []);
 
-  const handleGoToPayment = () => {
-    // ✅ ไม่มีออเดอร์เลย
-    if (!orderDetails.length) {
-      alert("ไม่มีข้อมูลออเดอร์");
+  const handleGoToPayment = async () => {
+    const latestDetails = await fetchDetails();
+
+    const activeOrders = latestDetails.filter((item) => item.track?.trackStateName !== 'cancel');
+
+    if (!activeOrders.length) {
+      toast.warning("ไม่มีข้อมูลออเดอร์ที่ยังดำเนินการอยู่");
       return;
     }
 
-
-    // ✅ ถ้าผ่านทุกเงื่อนไข ให้ไปหน้าชำระเงิน
     router.push(`/customer/payment/${orderNo}`);
   };
 
-  if (loading) return <p>กำลังโหลดข้อมูล...</p>;
-  if (orderDetails.length === 0) return <p>ไม่มีรายการสั่งอาหาร</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500 text-lg">กำลังโหลดข้อมูล...</p>
+      </div>
+    );
+
+  if (orderDetails.length === 0)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500 text-lg">ไม่มีรายการสั่งอาหาร</p>
+      </div>
+    );
 
   return (
     <>
-      <div className="p-4 pb-20 space-y-4">
-   
+      {/* Content Scrollable */}
+      <div className="p-4 pb-32 space-y-6">
+        <h1 className="text-2xl font-bold text-center mb-2">รายละเอียดออเดอร์ #{orderNo}</h1>
 
-        <div className="p-4 space-y-6">
-          {/* 🔹 เมนูที่กำลังดำเนินการ */}
-          <div className="border rounded-lg shadow p-4 space-y-4">
-            <h2 className="font-bold text-lg">เมนูที่กำลังดำเนินการ</h2>
-            {orderDetails.filter((item) => item.track?.trackStateName !== 'cancel').length > 0 ? (
-              orderDetails
-                .filter((item) => item.track?.trackStateName !== 'cancel')
-                .map((item) => (
-                  <div
-                    key={item.detailNo}
-                    className="flex items-center justify-between border rounded p-2 shadow-sm"
-                  >
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={item.menu?.image || '/images/placeholder.jpg'}
-                        alt={item.menu?.name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                      <div>
-                        <p className="font-semibold">{item.menu?.name}</p>
-                        <p>จำนวน: x {item.amount}</p>
-                        <p>ราคา: ฿{Number(item.totalCost).toFixed(2)}</p>
-                        <p>สถานที่: {item.place}</p>
-                        <p>สถานะ: {item.track?.trackStateName}</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      {item.track?.trackOrderID === 1 ? (
-                        <button
-                          onClick={() => setCancelOrder(item)}
-                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                        >
-                          ยกเลิก
-                        </button>
-                      ) : (
-                        <button
-                          disabled
-                          className="bg-gray-300 text-gray-500 px-3 py-1 rounded cursor-not-allowed"
-                        >
-                          ยกเลิก
-                        </button>
-                      )}
-                    </div>
+        {/* เมนูที่กำลังดำเนินการ */}
+        <div className="space-y-4">
+          {orderDetails.filter((item) => item.track?.trackStateName !== 'cancel').length > 0 ? (
+            orderDetails
+              .filter((item) => item.track?.trackStateName !== 'cancel')
+              .map((item) => (
+                <div
+                  key={item.detailNo}
+                  className="flex flex-col sm:flex-row items-center sm:items-start justify-between bg-white rounded-xl shadow-md p-4 space-y-2 sm:space-y-0 sm:space-x-4"
+                >
+                  <img
+                    src={item.menu?.image || '/images/placeholder.jpg'}
+                    alt={item.menu?.name}
+                    className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <p className="font-semibold text-lg">{item.menu?.name}</p>
+                    <p className="text-gray-600 text-sm">จำนวน: x {item.amount}</p>
+                    <p className="text-gray-600 text-sm">ราคา: ฿{Number(item.totalCost).toFixed(2)}</p>
+                    <p className="text-gray-600 text-sm">สถานที่: {item.place}</p>
+                    <p className="text-gray-600 text-sm">สถานะ: {item.track?.trackStateName}</p>
                   </div>
-                ))
-            ) : (
-              <p className="text-gray-500">ยังไม่มีเมนูกำลังดำเนินการ</p>
-            )}
-          </div>
-
-          {/* 🔹 เส้นคั่น */}
-          <hr className="border-t-2 border-gray-300 my-4" />
-
-          {/* 🔹 เมนูที่ถูกยกเลิก */}
-          <div className="border rounded-lg shadow p-4 space-y-4">
-            <h2 className="font-bold text-lg">เมนูที่ถูกยกเลิก</h2>
-            {orderDetails.filter((item) => item.track?.trackStateName === 'cancel').length > 0 ? (
-              orderDetails
-                .filter((item) => item.track?.trackStateName === 'cancel')
-                .map((item) => (
-                  <div
-                    key={item.detailNo}
-                    className="flex items-center justify-between border rounded p-2 shadow-sm bg-gray-100"
-                  >
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={item.menu?.image || '/images/placeholder.jpg'}
-                        alt={item.menu?.name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                      <div>
-                        <p className="font-semibold">{item.menu?.name}</p>
-                        <p>จำนวน: x {item.amount}</p>
-                        <p>ราคา: ฿{Number(item.totalCost).toFixed(2)}</p>
-                        <p>ผู้ที่ยกเลิก: {item.cancelLog?.cancelBy}</p>
-                        <p>สาเหตุ: {item.cancelLog?.description}</p>
-                        <p className="text-red-600 font-medium">
-                          สถานะ: {item.track?.trackStateName}
-                        </p>
-                      </div>
-                    </div>
+                  <div>
+                    {item.track?.trackOrderID === 1 ? (
+                      <button
+                        onClick={() => setCancelOrder(item)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                      >
+                        ยกเลิก
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed"
+                      >
+                        ยกเลิก
+                      </button>
+                    )}
                   </div>
-                ))
-            ) : (
-              <p className="text-gray-500">ยังไม่มีเมนูที่ถูกยกเลิก</p>
-            )}
-          </div>
+                </div>
+              ))
+          ) : (
+            <p className="text-gray-500 text-center">ยังไม่มีเมนูกำลังดำเนินการ</p>
+          )}
         </div>
       </div>
 
-      {/* 🔹 Footer Button ไปหน้าชำระเงิน */}
-      <div className="fixed bottom-0 left-0 w-full bg-white border-t p-4 shadow-lg">
+      {/* Sticky Footer */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-inner p-4">
         <button
           onClick={handleGoToPayment}
-          className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition"
         >
           ไปหน้าชำระเงิน
         </button>
       </div>
-
 
       {/* Modal สำหรับ Cancel */}
       {cancelOrder && (
@@ -164,7 +135,7 @@ export default function OrderDetailPage() {
             CancelOrder={cancelOrder}
             onSuccess={() => {
               setCancelOrder(null);
-              fetchDetails(); // รีเฟรชหลังยกเลิกสำเร็จ
+              fetchDetails();
             }}
           />
         </Modal>
