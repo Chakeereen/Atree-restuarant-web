@@ -1,8 +1,9 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MenuType } from "@/utils/type";
-
 import { useEffect, useState } from "react";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
 interface MenuCategoryProps {
   defaultValue?: number; // ใช้ typeID เดิม
@@ -17,7 +18,7 @@ export const MenuCategoryInput = ({ defaultValue, onChange }: MenuCategoryProps)
   useEffect(() => {
     const fetchMenuTypes = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/admin/menuType");
+        const res = await fetch(`${baseUrl}/api/admin/menuType`);
         const data: MenuType[] = await res.json();
         setMenuTypes(data);
 
