@@ -8,6 +8,7 @@ const phone = process.env.NEXT_PUBLIC_PHONE;
 
 
 export const getPaymentDetails = async (orderNo: number) => {
+  console.log(orderNo)
   try {
     const res = await fetch(`${baseUrl}/api/customer/payment?orderNo=${orderNo}`, {
       method: "GET",
@@ -115,18 +116,19 @@ export async function checkPaid(orderNo: number) {
   try {
     const res = await fetch(`${baseUrl}/api/customer/payment/paymentDetail?orderNo=${orderNo}`, {
       method: "GET",
-      cache: "no-store", // กัน cache
+      cache: "no-store",
     });
 
     if (!res.ok) return false;
 
-    const data = await res.json();
+    const data = await res.json(); // [{"status":"PAID"}] หรือ [{"status":"PENDING"}]
 
-    // ถ้า API คืนค่า null = ยังไม่จ่าย
-    if (!data) return false;
+    // เช็ค status ของบิล
+    if (Array.isArray(data) && data[0]?.status === "PAID") {
+      return true;
+    }
 
-    // ถ้ามีค่า = จ่ายแล้ว
-    return true;
+    return false; // ยังไม่จ่าย
   } catch (error) {
     console.error("checkPaid error:", error);
     return false;
