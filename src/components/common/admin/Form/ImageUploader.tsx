@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL as string;
+
 interface ImageUploaderProps {
   nameImage?: string;
   nameFileID?: string;
@@ -39,7 +41,7 @@ export default function ImageUploader({ nameImage = "image", nameFileID = "fileI
     formData.append("file", file);
 
     try {
-      const res = await fetch("/api/admin/menu/image", { method: "POST", body: formData });
+      const res = await fetch(`${baseUrl}/api/admin/menu/image`, { method: "POST", body: formData });
       const data = await res.json();
 
       if (!res.ok || !data.url) {

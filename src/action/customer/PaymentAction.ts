@@ -53,41 +53,23 @@ export const createPayment = async ({
   orderNo,
   totalPrice,
   methodID,
-  slip, // File หรือ null
+  image,   // URL ของรูปจาก uploader
+  fileId,  // fileId จาก uploader
 }: {
   orderNo: number;
   totalPrice: number;
   methodID: number;
-  slip?: File | null;
+  image?: string;
+  fileId?: string;
 }) => {
   try {
-    let imageUrl: string | undefined = undefined;
-    let fileId: string | undefined = undefined;
-
-    // ถ้ามี slip ให้ upload ก่อน
-    if (slip) {
-      const uploadForm = new FormData();
-      uploadForm.append("file", slip);
-
-      const uploadRes = await fetch(`${baseUrl}/api/customer/payment/slipUpload`, {
-        method: "POST",
-        body: uploadForm,
-      });
-
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok) throw new Error(uploadData.error || "Failed to upload slip");
-
-      imageUrl = uploadData.url;
-      fileId = uploadData.fileId;
-    }
-
     // สร้าง Payment record
     const body = {
       orderNo,
       totalCost: totalPrice,
       methodID,
-      ...(imageUrl && { image: imageUrl }), // ถ้ามี imageUrl
-      ...(fileId && { fileID: fileId }),     // ถ้ามี fileId
+      ...(image && { image }),   // ถ้ามี image
+      ...(fileId && { fileID: fileId }), // ถ้ามี fileId
     };
 
     const res = await fetch(`${baseUrl}/api/customer/payment/createPayment`, {
@@ -97,6 +79,7 @@ export const createPayment = async ({
       },
       body: JSON.stringify(body),
     });
+
     const data = await res.json();
     return data;
   } catch (err: any) {
