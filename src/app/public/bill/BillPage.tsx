@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPaymentDetails } from "@/action/customer/PaymentAction";
+import { checkPaid, getPaymentDetails } from "@/action/customer/PaymentAction";
 
 interface BillItem {
   detailNo: number;
@@ -22,27 +22,47 @@ export default function BillPage({ searchParams }: { searchParams: { orderNo: st
   const [items, setItems] = useState<BillItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPaid, setIsPaid] = useState(false);
 
   useEffect(() => {
     if (!searchParams.orderNo) return;
 
-    const fetchBill = async () => {
-      try {
-        const res = await getPaymentDetails(Number(searchParams.orderNo));
-        if (res.success) {
-          setItems(res.data);
-        } else {
-          setError(res.error || "Failed to fetch payment details");
-        }
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const orderNo = Number(searchParams.orderNo);
 
-    fetchBill();
+    // ฟังก์ชัน polling
+    const interval = setInterval(async () => {
+      const paid = await checkPaid(orderNo);
+      if (paid) {
+        clearInterval(interval);
+        setIsPaid(true);
+
+        // โหลดบิลหลังจากจ่ายแล้ว
+        try {
+          const res = await getPaymentDetails(orderNo);
+          if (res.success) {
+            setItems(res.data);
+          } else {
+            setError(res.error || "Failed to fetch payment details");
+          }
+        } catch (err: any) {
+          setError(err.message || "Something went wrong");
+        } finally {
+          setLoading(false);
+        }
+      }
+    }, 5000); // เช็คทุก 5 วินาที
+
+    return () => clearInterval(interval);
   }, [searchParams.orderNo]);
+
+  // ข้อความระหว่างรอ
+  if (!isPaid) {
+    return (
+      <p className="text-center mt-10 text-lg font-semibold">
+        กรุณารอพนักงานยืนยันการชำระเงินของคุณ...
+      </p>
+    );
+  }
 
   if (loading) return <p className="text-center mt-10">Loading bill...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
@@ -55,23 +75,17 @@ export default function BillPage({ searchParams }: { searchParams: { orderNo: st
   const dateTime = firstItem.order.dateTime;
   const paymentMethod = searchParams.paymentMethod ?? "ไม่ระบุ";
 
-  // คำนวณรวมทั้งหมด
   const grandTotal = items.reduce((sum, item) => sum + Number(item.totalCost), 0);
 
   return (
     <div className="max-w-md mx-auto p-6 bg-[#FDF6E3] rounded-xl shadow-md mt-6">
-      {/* Header */}
       <h2 className="text-2xl font-bold text-center mb-4">🍽️ บิลอาหาร ร้าน ATREE</h2>
-
-      {/* Order info */}
       <div className="mb-4 text-sm space-y-1">
         <p><span className="font-semibold">Order No:</span> {orderNo}</p>
         <p><span className="font-semibold">Table No:</span> {tableNo}</p>
         <p><span className="font-semibold">Date:</span> {dateTime}</p>
         <p><span className="font-semibold">Payment Method:</span> {paymentMethod}</p>
       </div>
-
-      {/* Items table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-t border-b border-gray-300">
           <thead>
@@ -94,13 +108,9 @@ export default function BillPage({ searchParams }: { searchParams: { orderNo: st
           </tbody>
         </table>
       </div>
-
-      {/* Grand total */}
       <div className="mt-4 text-right">
         <p className="text-lg font-bold">รวมทั้งหมด: {grandTotal} บาท</p>
       </div>
-
-      {/* Footer ขอบคุณ */}
       <div className="mt-6 text-center text-sm font-medium text-gray-700">
         ขอบคุณที่ใช้บริการ 🙏
       </div>
