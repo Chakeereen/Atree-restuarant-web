@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      return NextResponse.json({ error: "Staff not found" }, { status: 404 });
+      return NextResponse.json({ error: "Staff not found" }, { status: 401 });
     }
 
     // ตรวจสอบ password
