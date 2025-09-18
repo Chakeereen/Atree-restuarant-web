@@ -31,7 +31,7 @@ export async function PATCH(
 
     const updateOrder = await prisma.orders.update({
       where: { orderNo: orderNo },
-      data: { serviceID: 2 }
+      data: { serviceID: 3 }
     });
 
     return NextResponse.json({ success: true, data: updatedPayment, updateOrder });

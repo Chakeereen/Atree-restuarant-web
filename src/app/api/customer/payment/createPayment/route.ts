@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
         data: {
           orderNo: m_orderNo,
           tableNo: m_tableNo,
+          type: "payment",
         },
         tokens: tokenList,
       };
