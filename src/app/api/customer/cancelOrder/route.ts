@@ -1,6 +1,7 @@
 // src/app/api/order/cancel/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { admin } from "@/lib/firebaseAdmin";
 
 
 
@@ -65,6 +66,42 @@ export async function POST(req: NextRequest) {
         cancelBy,
       },
     });
+
+    const orderInfo = await prisma.orders.findUnique({
+      where : {orderNo},
+      select : {
+        orderNo :true,
+        tableNo : true,
+      }
+    })
+
+    // 📌 ดึง fcmToken จาก DB (สมมติว่า staff ทุกคนต้องได้รับแจ้ง)
+    const tokens = await prisma.fcmToken.findMany({
+      select: { token: true },
+    });
+
+    if (tokens.length > 0) {
+      const tokenList = tokens.map((t) => t.token);
+
+      // ส่ง Notification
+      const message = {
+        notification: {
+          title: "📢 ยกเลิกออเดอร์",
+          body: `โต๊ะ ${orderInfo?.tableNo} มีออเดอร์ #${orderInfo?.orderNo}`,
+        },
+        data: {
+          orderNo: orderInfo?.orderNo.toString() ?? '',
+          tableNo: orderInfo?.tableNo.toString() ?? '',
+          type: "",
+        },
+        tokens: tokenList,
+      };
+
+      // multicast แจ้งไปหลาย token พร้อมกัน
+      const response = await admin.messaging().sendEachForMulticast(message);
+      console.log("FCM success:", response.successCount, "FCM failed:", response.failureCount);
+    }
+
 
     return NextResponse.json(
       { message: "Order canceled successfully", updatedOrderDetail, cancelLog },
