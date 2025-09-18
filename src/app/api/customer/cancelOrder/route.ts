@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
           body: `ยกเลิก`,
         },
         data: {
-          
+          type : "cancel"
         },
         tokens: tokenList,
       };
