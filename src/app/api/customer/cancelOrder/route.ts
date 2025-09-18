@@ -67,14 +67,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const orderInfo = await prisma.orders.findUnique({
-      where : {orderNo},
-      select : {
-        orderNo :true,
-        tableNo : true,
-      }
-    })
-
     // 📌 ดึง fcmToken จาก DB (สมมติว่า staff ทุกคนต้องได้รับแจ้ง)
     const tokens = await prisma.fcmToken.findMany({
       select: { token: true },
@@ -87,11 +79,9 @@ export async function POST(req: NextRequest) {
       const message = {
         notification: {
           title: "📢 ยกเลิกออเดอร์",
-          body: `โต๊ะ ${orderInfo?.tableNo} มีออเดอร์ #${orderInfo?.orderNo}`,
+          body: `ยกเลิก`,
         },
         data: {
-          orderNo: orderInfo?.orderNo.toString() ?? '',
-          tableNo: orderInfo?.tableNo.toString() ?? '',
           type: "cancel",
         },
         tokens: tokenList,
