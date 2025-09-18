@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
         data: {
           orderNo: orderInfo?.orderNo.toString() ?? '',
           tableNo: orderInfo?.tableNo.toString() ?? '',
-          type: "",
+          type: "cancel",
         },
         tokens: tokenList,
       };
