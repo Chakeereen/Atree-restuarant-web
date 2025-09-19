@@ -13,12 +13,13 @@ interface CancelMenuProps {
 }
 
 export const CancelOrder = ({ CancelOrder, onSuccess }: CancelMenuProps) => {
-
-
   return (
-    <section>
-      <h1 className="text-2xl font-semibold mb-8 capitalize">เหตผลที่ยกเลิก</h1>
-      <div className="border p-8 rounded-md max-w-lg">
+    <section className="text-gray-900 dark:text-gray-100 transition-colors">
+      <h1 className="text-2xl font-semibold mb-8 capitalize">
+        เหตุผลที่ยกเลิก
+      </h1>
+
+      <div className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-8 rounded-md max-w-lg shadow-sm">
         <FormContainer
           action={cancelOrder}
           onSuccess={() => {
@@ -26,14 +27,33 @@ export const CancelOrder = ({ CancelOrder, onSuccess }: CancelMenuProps) => {
             // ปิด modal หรือ callback อื่น ๆ
           }}
         >
-          <input type="hidden" name="detailNo" value={CancelOrder.detailNo ?? ""} />
-          <input type="hidden" name="orderNo" value={CancelOrder.orderNo ?? ""} />
-          <CheckboxInput name="description" label="เลือกเมนูผิด" value="เลือกเมนูผิด"/>
-          <CheckboxInput name="description" label="เสือก" value="เสือก"/>
-          <CheckboxInput name="description" label="พนักงานทำงานช้า" value="พนักงานทำงานช้า"/>
-          <CheckboxInput name="description" label="บริการโคตรกาก" value="บริการโคตรกาก"/>
-          <TextareaInput name="description" label="เหตผลอื่น *ไม่บังคับ" placeholder="เหตผลที่ยกเลิก" />
-          <SubmitButton text="ยืนยันการยกเลิก" className="mb-3"/>
+          {/* hidden fields */}
+          <input
+            type="hidden"
+            name="detailNo"
+            value={CancelOrder.detailNo ?? ""}
+          />
+          <input
+            type="hidden"
+            name="orderNo"
+            value={CancelOrder.orderNo ?? ""}
+          />
+
+          {/* checkboxes */}
+          <CheckboxInput name="description" label="เลือกเมนูผิด" value="เลือกเมนูผิด" />
+          <CheckboxInput name="description" label="เสือก" value="เสือก" />
+          <CheckboxInput name="description" label="พนักงานทำงานช้า" value="พนักงานทำงานช้า" />
+          <CheckboxInput name="description" label="บริการโคตรกาก" value="บริการโคตรกาก" />
+
+          {/* textarea */}
+          <TextareaInput
+            name="description"
+            label="เหตุผลอื่น *ไม่บังคับ"
+            placeholder="เหตุผลที่ยกเลิก"
+          />
+
+          {/* submit button */}
+          <SubmitButton text="ยืนยันการยกเลิก" className="mb-3" />
         </FormContainer>
       </div>
     </section>

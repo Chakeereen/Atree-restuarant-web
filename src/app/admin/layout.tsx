@@ -1,5 +1,6 @@
 
 import Sidebar from "@/components/common/admin/SideBar/SideBar";
+import Navbar from "@/components/common/Navbar/Navbar";
 import { SidebarProvider } from "@/context/SidebarContext";
 
 export default function AdminLayout({
@@ -8,6 +9,8 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
+        <>
+        <Navbar />
         <SidebarProvider>
             <div className="flex h-screen w-full">
                 <Sidebar />
@@ -16,5 +19,6 @@ export default function AdminLayout({
                 </main>
             </div>
         </SidebarProvider>
+        </>
     );
 }

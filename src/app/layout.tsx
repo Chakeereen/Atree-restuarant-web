@@ -34,7 +34,7 @@ export default function RootLayout({
         <Provider>
           <div className="flex flex-col min-h-screen">
             {/* Navbar */}
-            <Navbar />
+            {/* <Navbar /> */}
 
             {/* Main content */}
             <main className="flex-1 w-full">{children}</main>
