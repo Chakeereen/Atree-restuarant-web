@@ -26,8 +26,8 @@ const LoginForm = ({ onSuccess }: LoginProps) => {
         {showForm && (
           <LoginFormContainer
             action={loginAdminAction}
-            redirectTo="/admin" // redirect หลัง login
             onSuccess={onSuccess}
+            redirectTo="/admin" // redirect หลัง login
           >
             <FormInput name="email" label="Email" type="email" />
             <FormInput name="password" label="Password" type="password" />

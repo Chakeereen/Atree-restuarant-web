@@ -5,32 +5,52 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
-import { MenuLists } from "@/utils/type";
+import { MenuLists, MenuType } from "@/utils/type";
 import { getMenuAll } from "@/action/admin/MenuAction";
-
-
 
 export default function MenuTable() {
   const [menus, setMenus] = useState<MenuLists[]>([]);
+  const [categories, setCategories] = useState<MenuType[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | "">("");
   const [loading, setLoading] = useState(true);
 
+  // Fetch menus
   useEffect(() => {
     const fetchMenus = async () => {
       try {
         const res = await getMenuAll();
         if (!res.success) throw new Error("Failed to fetch menus");
-        if (res.success) {
-          setMenus(res.data);
-        }
+        setMenus(res.data);
       } catch (error) {
         console.error("Error fetching menus:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchMenus();
   }, []);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/admin/menuType");
+        if (!res.ok) throw new Error("Failed to fetch categories");
+        const data: MenuType[] = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Filter menu ตาม selected category
+  const filteredMenus = selectedCategory
+    ? menus.filter((menu) => menu.typeID === selectedCategory)
+    : menus;
 
   if (loading) {
     return (
@@ -40,10 +60,29 @@ export default function MenuTable() {
       </div>
     );
   }
+
   return (
     <Card className="shadow-lg rounded-2xl">
       <CardContent>
         <h2 className="text-xl font-semibold mb-4">📋 รายการเมนู</h2>
+
+        {/* Select กรองประเภท */}
+        <div className="mb-4">
+          <label className="mr-2 font-medium">กรองตามประเภท:</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value ? Number(e.target.value) : "")}
+            className="border rounded p-1"
+          >
+            <option value="">ทั้งหมด</option>
+            {categories.map((cat) => (
+              <option key={cat.typeID} value={cat.typeID}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -55,7 +94,7 @@ export default function MenuTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {menus.map((menu) => (
+            {filteredMenus.map((menu) => (
               <TableRow key={menu.menuID}>
                 <TableCell>
                   <img

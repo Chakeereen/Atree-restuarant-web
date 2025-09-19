@@ -29,11 +29,11 @@ export async function POST(req: NextRequest) {
     const accessToken = generateAccessToken(admin.adminID, admin.role);
     const refreshToken = generateRefreshToken(admin.adminID);
 
-    
+
     // สร้าง response
     const res = NextResponse.json({
       message: "Login successful",
-      token:accessToken,
+      token: accessToken,
       user: {
         id: admin.adminID,
         name: admin.name,
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60, // 1 ชั่วโมง
+      maxAge: 24 * 60 * 60, // 1 วัน
     });
 
     // เก็บ refreshToken ใน cookie
