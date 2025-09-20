@@ -3,24 +3,27 @@
 import { useState, useEffect } from "react";
 import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
-import { Home, Settings, Users, Menu, HandPlatter, ChefHat, CookingPot, Armchair, LogOut } from "lucide-react";
+import { Home, Settings, Users, Menu, HandPlatter, ChefHat, CookingPot, Armchair, LogOut, SquareStar } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLogoutAdmin } from "@/utils/admin";
 
 export default function Sidebar() {
   const { open, toggle } = useSidebar();
-  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
+  const [dropdowns, setDropdowns] = useState<{ [key: string]: boolean }>({});
   const router = useRouter();
-
   const logoutAdmin = useLogoutAdmin();
 
   // ปิด dropdown อัตโนมัติเมื่อ sidebar ปิด
   useEffect(() => {
     if (!open) {
-      setMenuDropdownOpen(false);
+      setDropdowns({});
     }
   }, [open]);
+
+  const toggleDropdown = (key: string) => {
+    setDropdowns(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   return (
     <aside
@@ -63,21 +66,17 @@ export default function Sidebar() {
           {/* Menu Dropdown */}
           <li>
             <button
-              onClick={() => {
-                setMenuDropdownOpen(!menuDropdownOpen);
-                router.push("/admin/menu");
-              }}
+              onClick={() => toggleDropdown("menu")}
               className="flex items-center gap-3 p-3 w-full hover:bg-sidebar-accent rounded-none"
             >
               <ChefHat size={20} />
               {open && <span>จัดการภายในร้าน</span>}
             </button>
 
-            {/* Dropdown แบบ smooth + fade-in/out */}
             <ul
               className={cn(
                 "pl-6 overflow-hidden transition-[max-height] duration-300 ease-in-out",
-                menuDropdownOpen && open ? "max-h-96" : "max-h-0"
+                dropdowns["menu"] && open ? "max-h-96" : "max-h-0"
               )}
             >
               <li>
@@ -107,12 +106,73 @@ export default function Sidebar() {
                   โต๊ะ
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/admin/menu/recommended"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <SquareStar size={20} />
+                  เมนูแนะนำ
+                </Link>
+              </li>
             </ul>
-
-
           </li>
 
-        
+          {/* Report Dropdown */}
+          <li>
+            <button
+              onClick={() => toggleDropdown("report")}
+              className="flex items-center gap-3 p-3 w-full hover:bg-sidebar-accent rounded-none"
+            >
+              <ChefHat size={20} />
+              {open && <span>รายงาน</span>}
+            </button>
+
+            <ul
+              className={cn(
+                "pl-6 overflow-hidden transition-[max-height] duration-300 ease-in-out",
+                dropdowns["report"] && open ? "max-h-96" : "max-h-0"
+              )}
+            >
+              <li>
+                <Link
+                  href="/admin/report"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <CookingPot size={20} />
+                  รายงานการสั่งอาหาร
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/admin/report/incomeChart"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <HandPlatter size={20} />
+                  กราฟ (Chart)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/admin/report/paymentTable"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <Armchair size={20} />
+                  การชำระเงิน
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/admin/report/popularOrder"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <SquareStar size={20} />
+                  เมนูยอดนิยม
+                </Link>
+              </li>
+            </ul>
+          </li>
+
           <li>
             <button
               onClick={logoutAdmin}
@@ -122,8 +182,6 @@ export default function Sidebar() {
               {open && <span>ออกจากระบบ</span>}
             </button>
           </li>
-
-
         </ul>
       </nav>
     </aside>
