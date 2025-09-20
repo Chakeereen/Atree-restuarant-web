@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 type Staff = {
   staffID: string;
   name: string;
+  surname: string;
 };
 
 type LoginLog = {
@@ -74,7 +75,7 @@ export default function LoginLogTable() {
                 <td className="px-3 py-2">
                   {(currentPage - 1) * rowsPerPage + idx + 1}
                 </td>
-                <td className="px-3 py-2">{log.staff?.name || "-"}</td>
+                <td className="px-3 py-2">{log.staff?.name|| "-"} {log.staff?.surname||"-"}</td>
                 <td className="px-3 py-2">{log.staffID}</td>
                 <td
                   className={`px-3 py-2 font-semibold ${

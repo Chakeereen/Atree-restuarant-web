@@ -61,7 +61,7 @@ export default function ImageStaffUploader({ nameImage = "image", nameFileID = "
 
   return (
     <div className="mb-3">
-      <label className="block mb-1">Menu Image</label>
+      <label className="block mb-1">Image</label>
       <input type="file" accept="image/*" onChange={handleFileChange} />
       <button
         type="button"
