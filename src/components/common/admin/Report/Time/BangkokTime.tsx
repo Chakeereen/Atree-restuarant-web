@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Clock } from "lucide-react";
 
 export default function BangkokClock() {
   const [dateTime, setDateTime] = useState("");
@@ -21,18 +23,22 @@ export default function BangkokClock() {
       setDateTime(formatted);
     };
 
-    updateTime(); 
-    const interval = setInterval(updateTime, 1000); 
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl
-                    bg-white shadow
-                    dark:bg-gray-800 dark:shadow-lg">
-      <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">เวลาประเทศไทย</p>
-      <p className="text-2xl font-bold text-blue-600 mt-2 dark:text-blue-400">{dateTime}</p>
-    </div>
+    <Card className="w-full h-full shadow-md rounded-2xl">
+      <CardContent className="flex flex-col items-center justify-center gap-3 w-full h-full">
+        <div className="flex items-center gap-2 text-xl font-semibold text-gray-700">
+          <Clock className="w-6 h-6 text-blue-600" />
+          เวลาประเทศไทย
+        </div>
+
+        <p className="text-2xl font-bold text-blue-600">{dateTime}</p>
+      </CardContent>
+    </Card>
   );
 }

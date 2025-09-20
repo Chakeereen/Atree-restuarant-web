@@ -37,7 +37,7 @@ export default function ActiveServiceCounter() {
       <CardContent className="flex flex-col items-center justify-center gap-3 w-full h-full">
         <div className="flex items-center gap-2 text-xl font-semibold text-gray-700 dark:text-gray-200">
           <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          ผู้ใช้งาน ACTIVE ตอนนี้
+          ผู้ใช้บริการ ตอนนี้
         </div>
 
         {loading ? (
