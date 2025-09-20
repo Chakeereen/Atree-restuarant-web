@@ -1,6 +1,5 @@
 'use server';
 
-import FormDataNode from "form-data"; // npm i form-data
 
 // ใช้ relative path ถ้า server action อยู่บนโปรเจกต์เดียวกัน
 const API_BASE = process.env.API_URL || "";
