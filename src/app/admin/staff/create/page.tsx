@@ -1,9 +1,9 @@
 'use client'
 import { SubmitButton } from "@/components/common/admin/Form/Button";
 import FormInput from "@/components/common/admin/Form/FormInput"
-import ImageInput from "@/components/common/admin/Form/ImageInput";
 import { FormContainer } from "@/components/common/admin/Form/FormContainer";
 import { createStaffAction } from "@/action/admin/StaffAction";
+import ImageStaffUploader from "@/components/common/admin/Staff/ImageStaffUploader";
 
 
 
@@ -27,7 +27,7 @@ const CreateStaff = ({ onSuccess }: CreateStaffProps) => {
                     <FormInput name="name" label="Name" type="text" />
                     <FormInput name="surname" label="Surname" type="text" />
                     <FormInput name="telNo" label="เบอร์โทร" type="text" />
-                    <ImageInput />
+                    <ImageStaffUploader />
                     <SubmitButton text="create menu" />
                 </FormContainer>
             </div>

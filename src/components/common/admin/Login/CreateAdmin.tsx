@@ -2,9 +2,9 @@
 
 import { SubmitButton } from "@/components/common/admin/Form/Button";
 import FormInput from "@/components/common/admin/Form/FormInput";
-import ImageInput from "@/components/common/admin/Form/ImageInput";
 import { FormContainer } from "@/components/common/admin/Form/FormContainer";
 import { createAdminAction } from "@/action/admin/AdminAction";
+import ImageStaffUploader from "../Staff/ImageStaffUploader";
 
 interface CreateAdminProps {
   onSuccess?: () => void;
@@ -28,7 +28,7 @@ const CreateAdmin = ({ onSuccess }: CreateAdminProps) => {
             <FormInput name="confirmPassword" label="Confirm Password" type="password" />
             <FormInput name="name" label="Name" type="text" />
             <FormInput name="surname" label="Surname" type="text" />
-            <ImageInput />
+            <ImageStaffUploader />
             <SubmitButton text="Create Admin" />
           </FormContainer>
         </div>

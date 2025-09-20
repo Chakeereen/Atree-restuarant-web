@@ -6,9 +6,7 @@ const baseUrl = process.env.API_URL as string;
 
 export const createStaffAction = async (prevState: any, formData: FormData) => {
     try {
-        const file = formData.get("image") as File | null;
-        let imageUrl: string | undefined;
-        let fileId: string | undefined;
+        console.log(formData);
 
         const name = formData.get("name") as string | null;
         const surname = formData.get("surname") as string | null;
@@ -17,35 +15,42 @@ export const createStaffAction = async (prevState: any, formData: FormData) => {
         const password = formData.get("password") as string | null;
         const confirmPassword = formData.get("confirmPassword") as string | null;
 
+        // ดึงค่าจาก ImageUploader
+        const imageUrl = formData.get("image") as string | null;
+        const fileId = formData.get("fileID") as string | null;
+
+        // validate input
         if (!name || !surname || !telNo || !email || !password || !confirmPassword) {
+            if (fileId) {
+                try {
+                    await fetch(`${baseUrl}/api/admin/staff/image`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ fileId: fileId }),
+                    });
+                } catch (err) {
+                    console.warn("Failed to delete  image:", err);
+                }
+            }
             return { message: "กรอกข้อมูลไม่สมบูรณ์", success: false };
         }
 
         if (password !== confirmPassword) {
+            if (fileId) {
+                try {
+                    await fetch(`${baseUrl}/api/admin/staff/image`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ fileId: fileId }),
+                    });
+                } catch (err) {
+                    console.warn("Failed to delete  image:", err);
+                }
+            }
             return { message: "รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน", success: false };
         }
-        if (file && file.size > 0) {
-            const uploadForm = new FormData();
-            uploadForm.append("file", file);
 
-            const uploadRes = await fetch(`${baseUrl}/api/admin/staff/image`, {
-                method: "POST",
-                body: uploadForm,
-            });
-
-            const uploadData = await uploadRes.json();
-            if (!uploadRes.ok) {
-                return { message: uploadData.error || "Image upload failed", success: false };
-            }
-
-            imageUrl = uploadData.url;
-            fileId = uploadData.fileId;
-        } else {
-            // ไม่มีไฟล์ → ข้าม upload
-            imageUrl = undefined;
-            fileId = undefined;
-        }
-        // hash password ก่อนส่งไป API
+        // hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const rawFormData = {
@@ -65,7 +70,6 @@ export const createStaffAction = async (prevState: any, formData: FormData) => {
         });
 
         const result = await response.json();
-
         if (!response.ok) {
             return { message: result.error || "Failed to create staff", success: false };
         }
@@ -77,31 +81,12 @@ export const createStaffAction = async (prevState: any, formData: FormData) => {
     }
 };
 
+
 export const editStaffAction = async (prevState: any, formData: FormData) => {
-
-    const menuID = formData.get("menuID");
-    const oldImage = formData.get("oldImage") as string | null;
-    const oldFileId = formData.get("oldFileID") as string | null;
-
-
-    const file = formData.get("image") as File | null;
-    let imageUrl = oldImage;
-    let fileId = oldFileId;
-
-    if (file && file.size > 0) {
-        // ลบไฟล์เก่า (ถ้ามี)
-        if (oldFileId) {
-            await fetch(`${baseUrl}/api/admin/image`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ fileId: oldFileId }),
-            });
-        }
-    }
     try {
-        const staffID = formData.get("staffID") as string | null;
-        if (!staffID) return { message: "staffID is required", success: false };
+        console.log(formData);
 
+        const staffID = formData.get("staffID") as string | null;
         const name = formData.get("name") as string | null;
         const surname = formData.get("surname") as string | null;
         const telNo = formData.get("telNo") as string | null;
@@ -109,15 +94,69 @@ export const editStaffAction = async (prevState: any, formData: FormData) => {
         const password = formData.get("password") as string | null;
         const confirmPassword = formData.get("confirmPassword") as string | null;
 
+        // ดึงค่า image + fileID ใหม่จาก ImageUploader
+        let imageUrl = formData.get("image") as string | null;
+        let fileId = formData.get("fileID") as string | null;
+
+        // ดึงค่า oldFileID และ oldImage (รูปเก่า)
+        const oldFileId = formData.get("oldFileID") as string | null;
+        const oldImage = formData.get("oldImage") as string | null;
+
+        if (!staffID || !name || !surname || !telNo || !email) {
+            if (fileId) {
+                try {
+                    await fetch(`${baseUrl}/api/admin/staff/image`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ fileId: fileId }),
+                    });
+                } catch (err) {
+                    console.warn("Failed to delete  image:", err);
+                }
+            }
+            return { message: "กรอกข้อมูลไม่สมบูรณ์", success: false };
+        }
+
+        // เช็ก password + confirmPassword
         if (password && password !== confirmPassword) {
+            if (fileId) {
+                try {
+                    await fetch(`${baseUrl}/api/admin/staff/image`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ fileId: fileId }),
+                    });
+                } catch (err) {
+                    console.warn("Failed to delete  image:", err);
+                }
+            }
             return { message: "รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน", success: false };
         }
+
+        // ลบรูปเก่า (ถ้ามีการอัปโหลดใหม่)
+        if (fileId !== null) {
+            try {
+                await fetch(`${baseUrl}/api/admin/staff/image`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fileId: oldFileId }),
+                });
+            } catch (err) {
+                console.warn("Failed to delete old image:", err);
+            }
+        }
+
+        // ถ้าไม่ได้อัปโหลดรูปใหม่ → ใช้รูปเดิม
+        if (fileId === null) {
+            imageUrl = oldImage as string;
+            fileId = oldFileId as string;
+        }
+
         const rawFormData: any = {
             name,
             surname,
             telNo,
             email,
-            password,
             image: imageUrl,
             fileID: fileId,
         };

@@ -34,8 +34,8 @@ export const EditMenu = ({ menu, onSuccess }: EditMenuProps) => {
           <FormInput name="name" label="Menu Name" type="text" defaultValue={menu.name} />
           <FormInput name="price" label="Menu Price" type="number" defaultValue={menu.price?.toString() ?? ""} />
           <MenuCategoryInput defaultValue={menu.typeID} />
-          <input type="hidden" name="oldFileID" value={menu.fileID} />
-          <input type="hidden" name="oldImage" value={menu.image} />
+          <input type="hidden" name="oldFileID" value={menu.fileID ?? ""} />
+          <input type="hidden" name="oldImage" value={menu.image ?? ""} />
           <ImageUploader />
           <SubmitButton text="update menu" />
         </FormContainer>

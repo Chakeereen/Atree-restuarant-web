@@ -8,43 +8,56 @@ const baseUrl = process.env.API_URL as string;
 
 export const createAdminAction = async (prevState: any, formData: FormData) => {
   try {
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirmPassword") as string;
-    const name = formData.get("name") as string;
-    const surname = formData.get("surname") as string;
-    const file = formData.get("image") as File | null;
+    console.log(formData);
 
+    const email = formData.get("email") as string | null;
+    const password = formData.get("password") as string | null;
+    const confirmPassword = formData.get("confirmPassword") as string | null;
+    const name = formData.get("name") as string | "";
+    const surname = formData.get("surname") as string | "";
+
+    // ดึงค่าจาก ImageUploader
+    let imageUrl = formData.get("image") as string | null;
+    let fileId = formData.get("fileID") as string | "";
+
+    // validate input
     if (!email || !password || !confirmPassword) {
+      if (fileId) {
+        try {
+          await fetch(`${baseUrl}/api/admin/staff/image`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileId: fileId }),
+          });
+        } catch (err) {
+          console.warn("Failed to delete  image:", err);
+        }
+      }
       return { success: false, message: "กรุณากรอกข้อมูลให้ครบ" };
     }
 
     if (password !== confirmPassword) {
-      return { success: false, message: "Password ไม่ตรงกัน" };
+      if (fileId) {
+        try {
+          await fetch(`${baseUrl}/api/admin/staff/image`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileId: fileId }),
+          });
+        } catch (err) {
+          console.warn("Failed to delete  image:", err);
+        }
+      }
+      return { success: false, message: "รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน" };
     }
 
+    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // เก็บรูป (ถ้าไม่มีรูปใช้ default)
-    let imageUrl = "/profile.jpg"; // default
-    let fileId = "";
-
-    if (file && file.size > 0) {
-      const uploadForm = new FormData();
-      uploadForm.append("file", file);
-
-      const uploadRes = await fetch(`${baseUrl}/api/admin/staff/image`, {
-        method: "POST",
-        body: uploadForm,
-      });
-
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok) {
-        return { success: false, message: uploadData.error || "Image upload failed" };
-      }
-
-      imageUrl = uploadData.url;
-      fileId = uploadData.fileId;
+    // ถ้าไม่มีรูปใหม่ ให้ใช้ default
+    if (!imageUrl) {
+      imageUrl = "/profile.jpg";
+      fileId = "";
     }
 
     await prisma.admin.create({
@@ -65,4 +78,3 @@ export const createAdminAction = async (prevState: any, formData: FormData) => {
     return { success: false, message: "ไม่สามารถสร้าง Admin ได้" };
   }
 };
-
