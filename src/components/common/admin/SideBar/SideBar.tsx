@@ -82,7 +82,7 @@ export default function Sidebar() {
             >
               <li>
                 <Link
-                  href="/admin/menu/menuItem"
+                  href="/admin/menu"
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
                   <CookingPot size={20} />
@@ -112,15 +112,7 @@ export default function Sidebar() {
 
           </li>
 
-          <li>
-            <Link
-              href="/admin/income"
-              className="flex items-center gap-3 p-3 hover:bg-sidebar-accent rounded-none"
-            >
-              <Settings size={20} />
-              {open && <span>ยอดขาย</span>}
-            </Link>
-          </li>
+        
           <li>
             <button
               onClick={logoutAdmin}

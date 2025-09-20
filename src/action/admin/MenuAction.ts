@@ -3,7 +3,7 @@
 import FormDataNode from "form-data"; // npm i form-data
 
 // ใช้ relative path ถ้า server action อยู่บนโปรเจกต์เดียวกัน
-const API_BASE = process.env.API_URL || ""; 
+const API_BASE = process.env.API_URL || "";
 
 export const createMenuAction = async (prevState: any, formData: FormData) => {
   try {
@@ -45,24 +45,28 @@ export const createMenuAction = async (prevState: any, formData: FormData) => {
 
 export const editMenuAction = async (prevState: any, formData: FormData) => {
   try {
+    console.log(formData)
     const menuID = formData.get("menuID") as string;
     const name = formData.get("name") as string;
     const price = Number(formData.get("price"));
     const typeID = Number(formData.get("menuType"));
 
     // ดึงค่า image + fileID ใหม่จาก ImageUploader
-    const imageUrl = formData.get("image") as string | null;
-    const fileId = formData.get("fileID") as string | null;
+    let imageUrl = formData.get("image") as string | null;
+    let fileId = formData.get("fileID") as string | null;
+
 
     // ดึงค่า oldFileID (รูปเก่า) เพื่อลบก่อน
     const oldFileId = formData.get("oldFileID") as string | null;
+    const oldImage = formData.get("oldImage") as string | null;
+
 
     if (!name || !price || !typeID) {
       return { message: "กรอกข้อมูลไม่สมบูรณ์", success: false };
     }
 
     // ลบรูปเก่า (ถ้ามี)
-    if (oldFileId && oldFileId !== fileId) {
+    if (fileId !== null) {
       try {
         await fetch(`${API_BASE}/api/admin/menu/image`, {
           method: "DELETE",
@@ -73,6 +77,13 @@ export const editMenuAction = async (prevState: any, formData: FormData) => {
         console.warn("Failed to delete old image:", err);
       }
     }
+
+    if (fileId === null) {
+      imageUrl = oldImage as string;
+      fileId = oldFileId as string;
+    }
+
+
 
     const rawFormData = {
       name,

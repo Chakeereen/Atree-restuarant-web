@@ -166,3 +166,5 @@ export interface CartItem extends OrderDetail {
   name: string;
   image: string;
 }
+
+

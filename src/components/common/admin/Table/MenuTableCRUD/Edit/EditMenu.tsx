@@ -27,14 +27,15 @@ export const EditMenu = ({ menu, onSuccess }: EditMenuProps) => {
           action={editMenuAction}
           onSuccess={() => {
             onSuccess?.();
-              // ปิด modal หรือ callback อื่น ๆ
+            // ปิด modal หรือ callback อื่น ๆ
           }}
         >
           <input type="hidden" name="menuID" value={menu.menuID ?? ""} />
           <FormInput name="name" label="Menu Name" type="text" defaultValue={menu.name} />
           <FormInput name="price" label="Menu Price" type="number" defaultValue={menu.price?.toString() ?? ""} />
-          <MenuCategoryInput defaultValue={menu.typeID}/>
+          <MenuCategoryInput defaultValue={menu.typeID} />
           <input type="hidden" name="oldFileID" value={menu.fileID} />
+          <input type="hidden" name="oldImage" value={menu.image} />
           <ImageUploader />
           <SubmitButton text="update menu" />
         </FormContainer>

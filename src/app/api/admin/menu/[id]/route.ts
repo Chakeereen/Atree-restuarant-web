@@ -26,54 +26,34 @@ export async function GET(req: NextRequest) {
 }
 
 // PATCH /api/admin/menu/[id]
-
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    const { id } = params;
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: "Missing menu ID" },
-        { status: 400 }
-      );
-    }
-
-    const body = await req.json();
-    const { name, price, isAvailable, image, fileID, typeID } = body;
-
-    const updatedMenu = await prisma.menuLists.update({
-      where: { menuID: Number(id) },
-      data: {
-        ...(name !== undefined && { name }),
-        ...(price !== undefined && { price: Number(price) }),
-        ...(isAvailable !== undefined && { isAvailable }),
-        ...(image !== undefined && { image }),
-        ...(fileID !== undefined && { fileID }),
-        ...(typeID !== undefined && { typeID }),
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: "Menu updated successfully",
-      data: updatedMenu,
-    });
-  } catch (error: any) {
-    console.error(error);
-
-    // Prisma unique constraint error
-    if (error.code === "P2002") {
-      return NextResponse.json(
-        { success: false, error: "Menu name must be unique" },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: "Failed to update menu" },
-      { status: 500 }
-    );
+export async function PATCH(req: NextRequest) {
+  const id = req.nextUrl.pathname.split("/").pop();
+  if (!id) {
+    return NextResponse.json({ success: false, error: "Missing menu ID" }, { status: 400 });
   }
+
+  const body = await req.json();
+  const { name, price, isAvailable, image, fileID, typeID } = body;
+
+  const updatedMenu = await prisma.menuLists.update({
+    where: { menuID: Number(id) },
+    data: {
+      ...(name !== undefined && { name }),
+      ...(price !== undefined && { price: Number(price) }),
+      ...(isAvailable !== undefined && { isAvailable }),
+      ...(image !== undefined && { image }),
+      ...(fileID !== undefined && { fileID }),
+      ...(typeID !== undefined && { typeID }),
+    },
+  });
+
+  return NextResponse.json({
+    success: true,
+    message: "Menu updated successfully",
+    data: updatedMenu,
+  });
 }
+
 
 // DELETE /api/admin/menu/[id]
 export async function DELETE(req: NextRequest) {

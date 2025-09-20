@@ -42,9 +42,9 @@ const trackStateMap: Record<string, string> = {
   serving: "กำลังเสิร์ฟ",
   served: "เสิร์ฟแล้ว",
   cancel: "ยกเลิก",
+  fail: "ไม่สำเร็จ",
 };
 
-// แปลงวันที่ไทย พ.ศ. -> Date object
 function parseThaiDateTime(thaiDateStr: string): Date {
   const [datePart, timePart] = thaiDateStr.split(" ");
   const [day, month, year] = datePart.split("/").map(Number);
@@ -53,7 +53,6 @@ function parseThaiDateTime(thaiDateStr: string): Date {
   return new Date(gregorianYear, month - 1, day, hours, minutes, seconds);
 }
 
-// แปลง Date/DateTime -> "dd/MM/yyyy HH:mm:ss" พ.ศ.
 function formatThaiDateTime(date: Date): string {
   const day = date.getDate().toString().padStart(2, "0");
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -107,6 +106,8 @@ export default function OrdersTable() {
     .filter((o) => o.trackStatus !== "cancel")
     .reduce((sum, o) => sum + o.totalCost, 0);
 
+  const totalOrders = filteredOrders.length; // ✅ นับจำนวน order
+
   const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
   const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * rowsPerPage,
@@ -119,9 +120,17 @@ export default function OrdersTable() {
         รายการออเดอร์
       </h2>
 
-      <div className="mb-4 flex flex-wrap items-center gap-4">
+      <div className="mb-4 flex flex-wrap items-center gap-6">
         <p className="text-gray-700 dark:text-gray-300 font-medium">
-          ยอดขายรวม: <span className="text-green-500">{totalIncome.toLocaleString()} บาท</span>
+          ยอดขายรวม:{" "}
+          <span className="text-green-500">
+            {totalIncome.toLocaleString()} บาท
+          </span>
+        </p>
+
+        <p className="text-gray-700 dark:text-gray-300 font-medium">
+          จำนวนออเดอร์:{" "}
+          <span className="text-blue-500">{totalOrders.toLocaleString()} รายการ</span>
         </p>
 
         {/* Filter */}
@@ -186,13 +195,17 @@ export default function OrdersTable() {
                 key={o.detailNo}
                 className="border-b border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
               >
-                <td className="px-3 py-2">{(currentPage - 1) * rowsPerPage + index + 1}</td>
+                <td className="px-3 py-2">
+                  {(currentPage - 1) * rowsPerPage + index + 1}
+                </td>
                 <td className="px-3 py-2">{o.orderNo}</td>
                 <td className="px-3 py-2">{o.tableNo}</td>
                 <td className="px-3 py-2">{o.menu.name}</td>
                 <td className="px-3 py-2">{o.amount}</td>
                 <td className="px-3 py-2">{o.totalCost.toLocaleString()}</td>
-                <td className="px-3 py-2">{formatThaiDateTime(parseThaiDateTime(o.dateTime))}</td>
+                <td className="px-3 py-2">
+                  {formatThaiDateTime(parseThaiDateTime(o.dateTime))}
+                </td>
                 <td className="px-3 py-2">
                   {o.trackStatus === "cancel" ? (
                     <span className="text-red-500 font-semibold">ยกเลิก</span>

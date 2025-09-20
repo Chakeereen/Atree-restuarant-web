@@ -108,6 +108,8 @@ model MenuLists {
 
   type    MenuType      @relation(fields: [typeID], references: [typeID])
   details OrderDetail[]
+
+  Recommended Recommended[]
 }
 
 model MenuType {
@@ -184,4 +186,13 @@ model FcmToken {
   staff Staff? @relation(fields: [staffID], references: [staffID])
 
   @@index([staffID])
+}
+
+model Recommended {
+  id        Int       @id @default(autoincrement())
+  menuID    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  menu      MenuLists @relation(fields: [menuID], references: [menuID], onDelete: Cascade)
 }
