@@ -14,12 +14,10 @@ export async function submitOrder(
     place: string;
   }[]
 ) {
-  console.log(orderInfo)
   if (cart.length === 0) {
     console.log("EMPTY CART");
     return { success: false, error: "Cart is empty" };
   }
-  console.log(cart);
   try {
     const res = await fetch(`${baseUrl}/api/customer/createOrder`, {
       method: "POST",

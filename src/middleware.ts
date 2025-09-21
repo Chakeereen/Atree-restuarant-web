@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const ACCESS_TOKEN_SECRET = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET as string);
+const ACCESS_TOKEN_SECRET = new TextEncoder().encode(
+  process.env.ACCESS_TOKEN_SECRET as string
+);
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -34,7 +36,10 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(url);
       }
 
-      if (pathname.startsWith("/customer") && (payload as any).role !== "customer") {
+      if (
+        pathname.startsWith("/customer") &&
+        (payload as any).role !== "customer"
+      ) {
         url.pathname = "/error";
         url.searchParams.set("message", "Forbidden");
         return NextResponse.redirect(url);
@@ -42,8 +47,21 @@ export async function middleware(req: NextRequest) {
 
       // token ถูกต้อง -> allow next
       return NextResponse.next();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Invalid token:", err);
+
+      // ✅ handle token หมดอายุแยกต่างหาก
+      if (err.code === "ERR_JWT_EXPIRED") {
+        if (pathname.startsWith("/admin")) {
+          url.pathname = "/login";
+        } else {
+          url.pathname = "/error";
+          url.searchParams.set("message", "TokenExpired");
+        }
+        return NextResponse.redirect(url);
+      }
+
+      // ❌ token อื่น ๆ ไม่ถูกต้อง
       if (pathname.startsWith("/admin")) {
         url.pathname = "/login";
       } else {
