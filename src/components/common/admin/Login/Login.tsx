@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // <-- import useRouter
 import { SubmitButton } from "@/components/common/admin/Form/Button";
 import FormInput from "@/components/common/admin/Form/FormInput";
 import { LoginFormContainer } from "./LoginFormContainer";
@@ -13,6 +14,15 @@ interface LoginProps {
 const LoginForm = ({ onSuccess }: LoginProps) => {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(true);
+  const router = useRouter(); // <-- ใช้ useRouter
+
+  // กำหนด callback onSuccess สำหรับ redirect
+  const handleSuccess = () => {
+    if (onSuccess) {
+      onSuccess();
+    }
+    router.push("/admin"); // <-- redirect ไป /admin
+  };
 
   return (
     <section className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
@@ -26,8 +36,7 @@ const LoginForm = ({ onSuccess }: LoginProps) => {
         {showForm && (
           <LoginFormContainer
             action={loginAdminAction}
-            onSuccess={onSuccess}
-            redirectTo="/admin"
+            onSuccess={handleSuccess} // <-- ใช้ handleSuccess
           >
             <div className="space-y-4">
               <FormInput name="email" label="Email" type="email" />
