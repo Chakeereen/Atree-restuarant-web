@@ -93,8 +93,9 @@ export default function MenuTableCRUD() {
           </div>
 
           {/* Select กรองประเภท */}
+          {/* Select กรองประเภท */}
           <div className="mb-4">
-            <label className="mr-2 font-medium">กรองตามประเภท:</label>
+            <label className="mr-2 font-medium text-gray-700 dark:text-gray-200">กรองตามประเภท:</label>
             <select
               value={selectedCategory}
               onChange={(e) =>
@@ -102,7 +103,7 @@ export default function MenuTableCRUD() {
                   e.target.value ? Number(e.target.value) : ""
                 )
               }
-              className="border rounded p-1"
+              className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               <option value="">ทั้งหมด</option>
               {categories.map((cat) => (
@@ -112,6 +113,7 @@ export default function MenuTableCRUD() {
               ))}
             </select>
           </div>
+
 
           <Table>
             <TableHeader>
