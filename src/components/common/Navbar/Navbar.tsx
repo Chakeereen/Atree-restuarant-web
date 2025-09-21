@@ -1,26 +1,19 @@
-import { Darkmode } from "./DarkMode"
-import DropdownListMenu from "./DropdownListMenu"
-import Logo from "./Logo"
+import { Darkmode } from "./DarkMode";
+import DropdownListMenu from "./DropdownListMenu";
+import Logo from "./Logo";
 
 const Navbar = () => {
-    return (
-        <nav
-          className="w-full transition-colors duration-300"
-          style={{ backgroundColor: "#a8e6cf" }} // สีเขียวอ่อน
-        >
-            <div
-              className="flex flex-col sm:flex-row sm:items-center justify-between py-8 gap-4 px-5 w-full"
-              style={{ color: "#1f2937" }} // ตัวอักษรสีเข้มเพื่อให้เห็นชัด
-            >
-                <Logo />
+  return (
+    <nav className="w-full transition-colors duration-300 bg-gradient-to-r from-green-300 via-teal-300 to-cyan-300 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow-md">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 sm:py-6 px-6 w-full">
+        <Logo />
 
-                <div className="flex gap-4">
-                    <Darkmode />
-                    <DropdownListMenu />
-                </div>
-            </div>
-        </nav>
-    )
-}
+        <div className="flex items-center gap-4">
+          <Darkmode />
+        </div>
+      </div>
+    </nav>
+  );
+};
 
-export default Navbar
+export default Navbar;

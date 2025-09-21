@@ -14,6 +14,12 @@ import {
   LogOut,
   SquareStar,
   Settings,
+  Logs,
+  ClipboardMinus,
+  ListOrdered,
+  ChartColumnStacked,
+  CircleDollarSign,
+  ThumbsUp,
 } from "lucide-react";
 import Link from "next/link";
 import { useLogoutAdmin } from "@/utils/admin";
@@ -57,7 +63,8 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
       {/* Menu */}
       <nav className="flex-1 overflow-y-auto">
         <ul className="m-0 p-0">
-          <li>
+          {/* Dashboard */}
+          <li className="mb-2 border-b border-sidebar-border">
             <Link
               href="/admin"
               className="flex items-center gap-3 p-3 hover:bg-sidebar-accent rounded-none"
@@ -67,18 +74,45 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
             </Link>
           </li>
 
-          <li>
-            <Link
-              href="/admin/staff"
-              className="flex items-center gap-3 p-3 hover:bg-sidebar-accent rounded-none"
+          {/* Staff */}
+          <li className="mb-2 border-b border-sidebar-border">
+            <button
+              onClick={() => toggleDropdown("staff")}
+              className="flex items-center gap-3 p-3 w-full hover:bg-sidebar-accent rounded-none"
             >
               <Users size={20} />
               {open && <span>พนักงาน</span>}
-            </Link>
+            </button>
+
+            <ul
+              className={cn(
+                "pl-6 overflow-hidden transition-[max-height] duration-300 ease-in-out",
+                dropdowns["staff"] && open ? "max-h-96" : "max-h-0"
+              )}
+            >
+              <li>
+                <Link
+                  href="/admin/staff"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <Users size={20} />
+                  รายการพนักงาน
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/admin/staff/loginLog"
+                  className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
+                >
+                  <Logs size={20} />
+                  LOG ไฟล์การเข้าใช้ระบบ
+                </Link>
+              </li>
+            </ul>
           </li>
 
-          {/* Menu Dropdown */}
-          <li>
+          {/* Menu Management */}
+          <li className="mb-2 border-b border-sidebar-border">
             <button
               onClick={() => toggleDropdown("menu")}
               className="flex items-center gap-3 p-3 w-full hover:bg-sidebar-accent rounded-none"
@@ -125,20 +159,20 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   href="/admin/menu/recommended"
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
-                  <SquareStar size={20} />
+                  <ThumbsUp size={20} />
                   เมนูแนะนำ
                 </Link>
               </li>
             </ul>
           </li>
 
-          {/* Report Dropdown */}
-          <li>
+          {/* Report */}
+          <li className="mb-2 border-b border-sidebar-border">
             <button
               onClick={() => toggleDropdown("report")}
               className="flex items-center gap-3 p-3 w-full hover:bg-sidebar-accent rounded-none"
             >
-              <ChefHat size={20} />
+              <ClipboardMinus size={20} />
               {open && <span>รายงาน</span>}
             </button>
 
@@ -153,7 +187,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   href="/admin/report"
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
-                  <CookingPot size={20} />
+                  <ListOrdered size={20} />
                   รายงานการสั่งอาหาร
                 </Link>
               </li>
@@ -162,7 +196,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   href="/admin/report/incomeChart"
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
-                  <HandPlatter size={20} />
+                  <ChartColumnStacked  size={20} />
                   กราฟ (Chart)
                 </Link>
               </li>
@@ -171,7 +205,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   href="/admin/report/paymentTable"
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
-                  <Armchair size={20} />
+                  <CircleDollarSign size={20} />
                   การชำระเงิน
                 </Link>
               </li>
@@ -186,25 +220,16 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
               </li>
             </ul>
           </li>
-
-          <li>
-            <button
-              onClick={logoutAdmin}
-              className="flex items-center gap-3 p-3 hover:bg-sidebar-accent rounded-none"
-            >
-              <LogOut size={20} />
-              {open && <span>ออกจากระบบ</span>}
-            </button>
-          </li>
         </ul>
       </nav>
+
 
       {/* Footer Sticky */}
       <div className="sticky bottom-0 p-3 border-t border-sidebar-border bg-sidebar text-sidebar-foreground">
         {adminInfo ? (
           open ? (
-            <div className="flex items-center justify-between">
-              {/* Left: Profile */}
+            <div className="flex flex-col gap-2">
+              {/* Top row: Profile image + Name & Role */}
               <div className="flex items-center gap-2">
                 <img
                   src={adminInfo.image || "/default-avatar.png"}
@@ -217,56 +242,49 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                 </div>
               </div>
 
-              {/* Right: Actions */}
-              <div className="flex flex-col gap-1">
+              {/* Bottom row: Actions (open sidebar: same line) */}
+              <div className="flex items-center gap-4"> {/* gap เพิ่มจาก 2 เป็น 4 */}
                 <button
                   onClick={() => router.push(`/admin/profile/${adminInfo.adminID}`)}
-                  className="flex items-center gap-1 text-xs hover:text-blue-500"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-blue-50 hover:text-blue-600 transition"
                   title="ปรับแต่ง"
                 >
-                  <Settings size={16} />
-                  <span>ปรับแต่ง</span>
+                  <Settings size={18} /> {/* ไอคอนขยายเป็น 18 */}
+                  <span>Profile</span>
                 </button>
                 <button
                   onClick={logoutAdmin}
-                  className="flex items-center gap-1 text-xs hover:text-red-500"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-red-50 hover:text-red-600 transition"
                   title="ออกจากระบบ"
                 >
-                  <LogOut size={16} />
-                  <span>ออกจากระบบ</span>
+                  <LogOut size={18} /> {/* ไอคอนขยายเป็น 18 */}
+                  <span>Logout</span>
                 </button>
               </div>
+
             </div>
           ) : (
-            // Sidebar ปิด: แสดงเฉพาะไอคอน
+            // Sidebar ปิด: แสดงเฉพาะไอคอน logout
             <div className="flex flex-col items-center gap-2">
               <img
                 src={adminInfo.image || "/default-avatar.png"}
                 alt={adminInfo.name}
                 className="w-6 h-6 rounded-full object-cover"
               />
-              <div className="flex flex-col gap-1">
-                <button
-                  onClick={() => router.push(`/admin/profile/${adminInfo.adminID}`)}
-                  className="hover:text-blue-500"
-                  title="ปรับแต่ง"
-                >
-                  <Settings size={16} />
-                </button>
-                <button
-                  onClick={logoutAdmin}
-                  className="hover:text-red-500"
-                  title="ออกจากระบบ"
-                >
-                  <LogOut size={16} />
-                </button>
-              </div>
+              <button
+                onClick={logoutAdmin}
+                className="hover:text-red-500"
+                title="ออกจากระบบ"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
           )
         ) : (
           <span className="text-xs">Loading...</span>
         )}
       </div>
+
 
 
 

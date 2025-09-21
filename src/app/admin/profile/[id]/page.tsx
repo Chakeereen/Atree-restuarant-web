@@ -1,15 +1,17 @@
+import AdminProfile from "@/components/common/admin/Profile/Profile";
+
 interface PageProps {
-  params: {
-    id: string; // ชื่อต้องตรงกับ [id]
-  };
+  params: Promise<{
+    id: string;
+  }>;
 }
 
-const Page = ({ params }: PageProps) => {
-  const { id } = params;
+const Page = async ({ params }: PageProps) => {
+  const { id } = await params;
 
   return (
     <div>
-      Profile ID: {id}
+      <AdminProfile adminID={id} />
     </div>
   );
 };
