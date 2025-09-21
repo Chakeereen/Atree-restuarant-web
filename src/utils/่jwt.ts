@@ -10,9 +10,9 @@ interface CustomerPayload extends JwtPayload {
 }
 
 // สร้าง Access Token (อายุสั้น) พร้อม role
-export const generateAccessToken = (userId: string, role: string) => {
-  return jwt.sign({ userId, role }, ACCESS_TOKEN_SECRET, {
-    expiresIn: "1h",
+export const generateAccessToken = (userId: string, role: string, name: string, surname: string, image: string) => {
+  return jwt.sign({ userId, role, name, surname, image }, ACCESS_TOKEN_SECRET, {
+    expiresIn: "6h",
   });
 };
 

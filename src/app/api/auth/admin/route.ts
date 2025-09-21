@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     // สร้าง tokens
-    const accessToken = generateAccessToken(admin.adminID, admin.role);
+    const accessToken = generateAccessToken(admin.adminID, admin.role, admin.name, admin.surname, admin.image);
     const refreshToken = generateRefreshToken(admin.adminID);
 
 

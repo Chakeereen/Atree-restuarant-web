@@ -1,28 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
-import { Home, Settings, Users, Menu, HandPlatter, ChefHat, CookingPot, Armchair, LogOut, SquareStar } from "lucide-react";
+import {
+  Home,
+  Users,
+  Menu,
+  HandPlatter,
+  ChefHat,
+  CookingPot,
+  Armchair,
+  LogOut,
+  SquareStar,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useLogoutAdmin } from "@/utils/admin";
+import { useRouter } from "next/navigation";
 
-export default function Sidebar() {
+interface SidebarProps {
+  adminInfo: {
+    adminID: string;
+    role: string;
+    name: string;
+    surname: string;
+    image: string;
+  }; // รับ object แทน adminID
+}
+
+export default function Sidebar({ adminInfo }: SidebarProps) {
+  const router = useRouter();
   const { open, toggle } = useSidebar();
   const [dropdowns, setDropdowns] = useState<{ [key: string]: boolean }>({});
-  const router = useRouter();
   const logoutAdmin = useLogoutAdmin();
 
-  // ปิด dropdown อัตโนมัติเมื่อ sidebar ปิด
-  useEffect(() => {
-    if (!open) {
-      setDropdowns({});
-    }
-  }, [open]);
-
   const toggleDropdown = (key: string) => {
-    setDropdowns(prev => ({ ...prev, [key]: !prev[key] }));
+    setDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -41,7 +55,7 @@ export default function Sidebar() {
       </div>
 
       {/* Menu */}
-      <nav className="flex-1">
+      <nav className="flex-1 overflow-y-auto">
         <ul className="m-0 p-0">
           <li>
             <Link
@@ -184,6 +198,78 @@ export default function Sidebar() {
           </li>
         </ul>
       </nav>
+
+      {/* Footer Sticky */}
+      <div className="sticky bottom-0 p-3 border-t border-sidebar-border bg-sidebar text-sidebar-foreground">
+        {adminInfo ? (
+          open ? (
+            <div className="flex items-center justify-between">
+              {/* Left: Profile */}
+              <div className="flex items-center gap-2">
+                <img
+                  src={adminInfo.image || "/default-avatar.png"}
+                  alt={`${adminInfo.name} ${adminInfo.surname}`}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <div className="flex flex-col">
+                  <span className="font-medium">{adminInfo.name} {adminInfo.surname}</span>
+                  <span className="text-xs">{adminInfo.role}</span>
+                </div>
+              </div>
+
+              {/* Right: Actions */}
+              <div className="flex flex-col gap-1">
+                <button
+                  onClick={() => router.push(`/admin/profile/${adminInfo.adminID}`)}
+                  className="flex items-center gap-1 text-xs hover:text-blue-500"
+                  title="ปรับแต่ง"
+                >
+                  <Settings size={16} />
+                  <span>ปรับแต่ง</span>
+                </button>
+                <button
+                  onClick={logoutAdmin}
+                  className="flex items-center gap-1 text-xs hover:text-red-500"
+                  title="ออกจากระบบ"
+                >
+                  <LogOut size={16} />
+                  <span>ออกจากระบบ</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            // Sidebar ปิด: แสดงเฉพาะไอคอน
+            <div className="flex flex-col items-center gap-2">
+              <img
+                src={adminInfo.image || "/default-avatar.png"}
+                alt={adminInfo.name}
+                className="w-6 h-6 rounded-full object-cover"
+              />
+              <div className="flex flex-col gap-1">
+                <button
+                  onClick={() => router.push(`/admin/profile/${adminInfo.adminID}`)}
+                  className="hover:text-blue-500"
+                  title="ปรับแต่ง"
+                >
+                  <Settings size={16} />
+                </button>
+                <button
+                  onClick={logoutAdmin}
+                  className="hover:text-red-500"
+                  title="ออกจากระบบ"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            </div>
+          )
+        ) : (
+          <span className="text-xs">Loading...</span>
+        )}
+      </div>
+
+
+
     </aside>
   );
 }
