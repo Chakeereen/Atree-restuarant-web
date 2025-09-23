@@ -41,9 +41,9 @@ export const CancelOrder = ({ CancelOrder, onSuccess }: CancelMenuProps) => {
 
           {/* checkboxes */}
           <CheckboxInput name="description" label="เลือกเมนูผิด" value="เลือกเมนูผิด" />
-          <CheckboxInput name="description" label="เสือก" value="เสือก" />
+          <CheckboxInput name="description" label="เปลี่ยนใจอยากเลื่อกเมนูอื่น" value="เปลี่ยนใจอยากเลื่อกเมนูอื่น" />
           <CheckboxInput name="description" label="พนักงานทำงานช้า" value="พนักงานทำงานช้า" />
-          <CheckboxInput name="description" label="บริการโคตรกาก" value="บริการโคตรกาก" />
+          <CheckboxInput name="description" label="ไม่บอก!!!" value="ไม่บอก!!!" />
 
           {/* textarea */}
           <TextareaInput
