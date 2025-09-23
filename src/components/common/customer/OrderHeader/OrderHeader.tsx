@@ -38,7 +38,7 @@ export default function OrderHeader({ orderNo, tableNo }: OrderHeaderProps) {
     <header className="p-4 border-b dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-20 flex justify-between items-center shadow-sm">
       <div>
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">โต๊ะ {tableNo}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-300">ออร์เดอร์ : {orderNo}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-300">ออเดอร์ : {orderNo}</p>
       </div>
 
       <div className="flex items-center gap-2">
