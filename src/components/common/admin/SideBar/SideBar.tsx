@@ -23,7 +23,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLogoutAdmin } from "./Loguot-wrapper";
+import { logoutAdmin } from "@/utils/admin";
+
+
 
 
 interface SidebarProps {
@@ -39,8 +41,12 @@ interface SidebarProps {
 export default function Sidebar({ adminInfo }: SidebarProps) {
   const { open, toggle } = useSidebar();
   const [dropdowns, setDropdowns] = useState<{ [key: string]: boolean }>({});
-  const router = useRouter();
-  const logoutAdmin = useLogoutAdmin(); // hook logout
+   const router = useRouter();
+
+  const handleLogout = async () => {
+    await logoutAdmin(); // ลบ cookie
+    router.push("/admin/login"); // redirect ไป login
+  };
 
   const toggleDropdown = (key: string) => {
     setDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -253,7 +259,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   <span>Profile</span>
                 </button>
                 <button
-                  onClick={logoutAdmin} // logout server action ผ่าน hook
+                  onClick={handleLogout} // logout server action ผ่าน hook
                   className="flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-red-50 hover:text-red-600 transition"
                   title="ออกจากระบบ"
                 >
@@ -270,7 +276,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                 className="w-6 h-6 rounded-full object-cover"
               />
               <button
-                onClick={logoutAdmin}
+                onClick={handleLogout}
                 className="hover:text-red-500"
                 title="ออกจากระบบ"
               >

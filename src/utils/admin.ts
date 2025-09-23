@@ -1,7 +1,7 @@
-"use server";
+"use clients";
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import router from "next/router";
+import { toast } from "sonner";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
@@ -22,7 +22,6 @@ export async function loginAdminAction(formData: FormData) {
 
     const data = await res.json();
     if (!res.ok) return { success: false, message: data.error || "Login ไม่สำเร็จ" };
-
     return { success: true, message: data.message };
   } catch (err) {
     console.error(err);
@@ -30,12 +29,24 @@ export async function loginAdminAction(formData: FormData) {
   }
 }
 
-export async function logoutAdminAction() {
+
+
+export async function logoutAdmin() {
   try {
-    await fetch(`${baseUrl}/api/auth/admin/logout`, { method: "POST" });
-    return { success: true, message: "Logout สำเร็จ" };
+    const res = await fetch(`${baseUrl}/api/auth/admin/logout`, {
+      method: "POST",
+      credentials: "include", // <<< ต้องมี
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      toast(data.error || "Logout ไม่สำเร็จ");
+      return;
+    }
+
+    toast("Logout สำเร็จ");
   } catch (err) {
     console.error(err);
-    return { success: false, message: "เกิดข้อผิดพลาดในการ logout" };
+    toast("เกิดข้อผิดพลาดในการ logout");
   }
 }
