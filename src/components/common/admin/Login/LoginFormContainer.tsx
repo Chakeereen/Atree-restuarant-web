@@ -36,9 +36,7 @@ export const LoginFormContainer = ({
 
     if (state.success) {
       toast.success(state.message);
-      if (redirectTo) {
-        router.push(redirectTo); // redirect client-side
-      }
+      router.push(redirectTo); // redirect client-side
       onSuccess?.();
     } else {
       toast.error(state.message);
