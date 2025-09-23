@@ -2,10 +2,17 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Darkmode } from "@/components/common/Navbar/DarkMode";
 import HeaderMain from "@/components/common/Header/header";
+import { useRouter } from "next/router";
 
 const HomePage = () => {
+
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/customer?status=pending");
+  };
+
   const featuredDishes = [
     {
       name: "โจ๊ก",
@@ -32,7 +39,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header / Navbar */}
-   <HeaderMain/>
+      <HeaderMain />
 
       {/* Hero Section */}
       <section className="bg-green-50 dark:bg-green-900 py-16">
@@ -43,7 +50,10 @@ const HomePage = () => {
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
             ร้านอาหาร Halal กลางเมืองเชียงใหม่ จำหน่ายอาหารอร่อยหลากหลาย เช่น โจ๊ก, ข้าวหมก, โรตี, ชาชัก
           </p>
-          <Button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition">
+          <Button
+            onClick={handleClick}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition"
+          >
             สั่งอาหารตอนนี้
           </Button>
         </div>
