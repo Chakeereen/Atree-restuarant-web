@@ -63,7 +63,7 @@ export default function HoldOrderPage({
                   onClick={() => setModalOpen(item.menuID)}
                   className="mt-1 text-sm text-blue-500 dark:text-blue-400 hover:underline"
                 >
-                  เพิ่มคำขอพิเศษ
+                  คำขอเพิ่มเติม
                 </button>
               </div>
             </span>
