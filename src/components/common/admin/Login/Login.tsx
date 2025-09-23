@@ -14,7 +14,7 @@ const LoginForm = ({ onSuccess }: LoginProps) => {
     <section className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
-          Login
+          Login Admin
         </h1>
 
         <LoginFormContainer
