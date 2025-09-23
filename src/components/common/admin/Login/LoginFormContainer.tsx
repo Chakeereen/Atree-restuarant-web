@@ -1,47 +1,28 @@
-'use client'
-
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useActionState } from "react";
+"use client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-const initialState = {
-  message: '',
-  success: false
-};
-
-type LoginActionFunction = (
-  prevState: any,
-  formData: FormData
-) => Promise<{ message: string; success: boolean }>;
-
-interface LoginFormContainerProps {
-  action: LoginActionFunction;
+interface Props {
+  action: (formData: FormData) => Promise<{ success: boolean; message: string }>;
   children: React.ReactNode;
-  onSuccess?: () => void;
-  redirectTo?: string; // path สำหรับ redirect หลัง login
+  redirectTo?: string;
 }
 
-export const LoginFormContainer = ({
-  action,
-  children,
-  onSuccess,
-  redirectTo = "/admin",
-}: LoginFormContainerProps) => {
-  const [state, formAction] = useActionState(action, initialState);
+export const LoginFormContainer = ({ action, children, redirectTo = "/admin" }: Props) => {
   const router = useRouter();
 
-  useEffect(() => {
-    if (!state.message) return;
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await action(formData);
 
-    if (state.success) {
-      toast.success(state.message);
-      router.push(redirectTo); // redirect client-side
-      onSuccess?.();
+    if (result.success) {
+      toast.success(result.message);
+      setTimeout(() => router.push(redirectTo), 100); // redirect หลัง toast
     } else {
-      toast.error(state.message);
+      toast.error(result.message);
     }
-  }, [state.message, state.success, onSuccess, redirectTo, router]);
+  };
 
-  return <form action={formAction}>{children}</form>;
+  return <form onSubmit={handleSubmit}>{children}</form>;
 };

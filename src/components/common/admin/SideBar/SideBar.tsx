@@ -22,8 +22,9 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import Link from "next/link";
-import { useLogoutAdmin } from "@/utils/admin";
 import { useRouter } from "next/navigation";
+import { useLogoutAdmin } from "./Loguot-wrapper";
+
 
 interface SidebarProps {
   adminInfo: {
@@ -32,14 +33,14 @@ interface SidebarProps {
     name: string;
     surname: string;
     image: string;
-  }; // รับ object แทน adminID
+  };
 }
 
 export default function Sidebar({ adminInfo }: SidebarProps) {
-  const router = useRouter();
   const { open, toggle } = useSidebar();
   const [dropdowns, setDropdowns] = useState<{ [key: string]: boolean }>({});
-  const logoutAdmin = useLogoutAdmin();
+  const router = useRouter();
+  const logoutAdmin = useLogoutAdmin(); // hook logout
 
   const toggleDropdown = (key: string) => {
     setDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -105,7 +106,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
                   <Logs size={20} />
-                  LOG ไฟล์การเข้าใช้ระบบ
+                  LOG การเข้าใช้งาน
                 </Link>
               </li>
             </ul>
@@ -196,7 +197,7 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                   href="/admin/report/incomeChart"
                   className="flex items-center gap-2 p-2 hover:bg-sidebar-accent rounded"
                 >
-                  <ChartColumnStacked  size={20} />
+                  <ChartColumnStacked size={20} />
                   กราฟ (Chart)
                 </Link>
               </li>
@@ -223,13 +224,12 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
         </ul>
       </nav>
 
-
       {/* Footer Sticky */}
       <div className="sticky bottom-0 p-3 border-t border-sidebar-border bg-sidebar text-sidebar-foreground">
         {adminInfo ? (
           open ? (
             <div className="flex flex-col gap-2">
-              {/* Top row: Profile image + Name & Role */}
+              {/* Profile */}
               <div className="flex items-center gap-2">
                 <img
                   src={adminInfo.image || "/default-avatar.png"}
@@ -242,29 +242,27 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
                 </div>
               </div>
 
-              {/* Bottom row: Actions (open sidebar: same line) */}
-              <div className="flex items-center gap-4"> {/* gap เพิ่มจาก 2 เป็น 4 */}
+              {/* Actions */}
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => router.push(`/admin/profile/${adminInfo.adminID}`)}
                   className="flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-blue-50 hover:text-blue-600 transition"
                   title="ปรับแต่ง"
                 >
-                  <Settings size={18} /> {/* ไอคอนขยายเป็น 18 */}
+                  <Settings size={18} />
                   <span>Profile</span>
                 </button>
                 <button
-                  onClick={logoutAdmin}
+                  onClick={logoutAdmin} // logout server action ผ่าน hook
                   className="flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-red-50 hover:text-red-600 transition"
                   title="ออกจากระบบ"
                 >
-                  <LogOut size={18} /> {/* ไอคอนขยายเป็น 18 */}
+                  <LogOut size={18} />
                   <span>Logout</span>
                 </button>
               </div>
-
             </div>
           ) : (
-            // Sidebar ปิด: แสดงเฉพาะไอคอน logout
             <div className="flex flex-col items-center gap-2">
               <img
                 src={adminInfo.image || "/default-avatar.png"}
@@ -284,10 +282,6 @@ export default function Sidebar({ adminInfo }: SidebarProps) {
           <span className="text-xs">Loading...</span>
         )}
       </div>
-
-
-
-
     </aside>
   );
 }

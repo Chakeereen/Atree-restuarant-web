@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { generateAccessToken, generateRefreshToken } from "@/utils/่jwt";
 
-
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
@@ -13,26 +12,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "กรุณากรอก email และ password" }, { status: 400 });
     }
 
-    // หา admin จาก DB
     const admin = await prisma.admin.findUnique({ where: { email } });
     if (!admin) {
       return NextResponse.json({ error: "Admin ไม่พบ" }, { status: 404 });
     }
 
-    // ตรวจสอบ password
     const validPassword = await bcrypt.compare(password, admin.password);
     if (!validPassword) {
       return NextResponse.json({ error: "รหัสผ่านไม่ถูกต้อง" }, { status: 401 });
     }
 
-    // สร้าง tokens
     const accessToken = generateAccessToken(admin.adminID, admin.role, admin.name, admin.surname, admin.image);
     const refreshToken = generateRefreshToken(admin.adminID);
 
-
-    // สร้าง response
     const res = NextResponse.json({
-      message: "Login successful",
+      message: "Login สำเร็จ",
       token: accessToken,
       user: {
         id: admin.adminID,
@@ -43,20 +37,19 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // เก็บ accessToken ใน cookie
+    // เซ็ต cookie
     res.cookies.set("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 24 * 60 * 60, // 1 วัน
+      maxAge: 24 * 60 * 60,
     });
 
-    // เก็บ refreshToken ใน cookie
     res.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 วัน
+      maxAge: 7 * 24 * 60 * 60,
     });
 
     return res;
