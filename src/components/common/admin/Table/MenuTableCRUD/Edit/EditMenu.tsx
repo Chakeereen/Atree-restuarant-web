@@ -17,7 +17,6 @@ interface EditMenuProps {
 }
 
 export const EditMenu = ({ menu, onSuccess }: EditMenuProps) => {
-  const router = useRouter();
 
   return (
     <section>

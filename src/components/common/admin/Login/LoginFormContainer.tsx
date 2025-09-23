@@ -32,8 +32,9 @@ export const LoginFormContainer = ({ action, children, onSuccess,  refreshOnSucc
        else {
          toast.success(state.message)
        }
+     
        onSuccess?.()
-       setTimeout(() => router.push("/admin"), 100); // redirect หลัง toast
+       setTimeout(() => router.push("/admin"), 170); // redirect หลัง toast
      }
    }, [state.message, state.success, onSuccess, refreshOnSuccess, router])
  
