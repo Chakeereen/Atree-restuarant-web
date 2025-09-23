@@ -11,7 +11,7 @@ interface CreateMenuTypeProps {
 const CreateMenuType = ({ onSuccess }: CreateMenuTypeProps) => {
     return (
         <section>
-            <h1 className="text-2xl font-semibold mb-8 capitalize">new menu</h1>
+            <h1 className="text-2xl font-semibold mb-8 capitalize">New Menu Category</h1>
             <div className="border p-8 rounded-md max-w-lg">
                 <FormContainer 
                     action={createMenuTypeAction} 

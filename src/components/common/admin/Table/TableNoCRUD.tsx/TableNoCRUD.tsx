@@ -154,9 +154,9 @@ export default function MenuTypeTableCRUD() {
                         //fetchTable(); // รีเฟรชเมนูหลังปิด modal
                     }}
                 >
-                    <h2 className="text-xl font-semibold mb-4">เพิ่มข้อมูลเมนู</h2>
+                    <h2 className="text-xl font-semibold mb-4">เพิ่มข้อมูลโต๊ะ</h2>
                     <p className="text-gray-600 mb-4">
-                        คุณสามารถสร้างเมนูใหม่ได้ที่นี่
+                        คุณสามารถสร้างข้อมูลโต๊ะใหม่ได้ที่นี่
                     </p>
                     <CreateTableNo
                         onSuccess={() => {

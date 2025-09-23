@@ -170,9 +170,9 @@ export default function StaffTableCRUD() {
                         fetchStaffs(); // รีเฟรชเมนูหลังปิด modal
                     }}
                 >
-                    <h2 className="text-xl font-semibold mb-4">เพิ่มข้อมูลเมนู</h2>
+                    <h2 className="text-xl font-semibold mb-4">เพิ่มข้อมูลพนักงาน</h2>
                     <p className="text-gray-600 mb-4">
-                        คุณสามารถสร้างเมนูใหม่ได้ที่นี่
+                        คุณสามารถสร้างข้อมูลพนักงานใหม่ได้ที่นี่
                     </p>
                     <CreateStaff
                         onSuccess={() => {
