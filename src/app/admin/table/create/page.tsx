@@ -20,7 +20,7 @@ const CreateTableNo = ({ onSuccess }: CreateTableProps) => {
                     refreshOnSuccess={false} // ไม่ต้อง refresh ในนี้ เพราะเราจะทำใน onSuccess ของ Page
                 >
                     <FormInput name="locationDetail" label="location Detail" type="text" />
-                    <SubmitButton text="create menu" />
+                    <SubmitButton text="create" />
                 </FormContainer>
             </div>
         </section>

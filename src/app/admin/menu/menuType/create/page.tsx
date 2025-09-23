@@ -19,7 +19,7 @@ const CreateMenuType = ({ onSuccess }: CreateMenuTypeProps) => {
                     refreshOnSuccess={false} // ไม่ต้อง refresh ในนี้ เพราะเราจะทำใน onSuccess ของ Page
                 >
                     <FormInput name="name" label="Menu Type Name" type="text" />
-                    <SubmitButton text="create menu" />
+                    <SubmitButton text="create" />
                 </FormContainer>
             </div>
         </section>

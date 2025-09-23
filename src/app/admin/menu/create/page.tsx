@@ -24,7 +24,7 @@ const CreateMenu = ({ onSuccess }: CreateMenuProps) => {
           <FormInput name="price" label="Menu Price" type="number" />
           <MenuCategoryInput />
           <ImageUploader />
-          <SubmitButton text="create menu" />
+          <SubmitButton text="create" />
         </FormContainer>
       </div>
     </section>

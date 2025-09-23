@@ -28,7 +28,7 @@ const CreateStaff = ({ onSuccess }: CreateStaffProps) => {
                     <FormInput name="surname" label="Surname" type="text" />
                     <FormInput name="telNo" label="เบอร์โทร" type="text" />
                     <ImageStaffUploader />
-                    <SubmitButton text="create menu" />
+                    <SubmitButton text="create" />
                 </FormContainer>
             </div>
         </section>

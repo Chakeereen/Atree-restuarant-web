@@ -148,7 +148,7 @@ export default function PaymentReportTable() {
               <th className="px-3 py-2">No</th>
               <th className="px-3 py-2">Order No</th>
               <th className="px-3 py-2">Method</th>
-              <th className="px-3 py-2">Amount</th>
+              <th className="px-3 py-2">Cost</th>
               <th className="px-3 py-2">Date / Time</th>
               <th className="px-3 py-2">Status</th>
               <th className="px-3 py-2">Staff</th>

@@ -30,7 +30,7 @@ export const EditType = ({ menuType, onSuccess }: EditMenuTypeProps) => {
         >
           <input type="hidden" name="TypeID" value={menuType.typeID ?? ""} />
           <FormInput name="name" label="Menu Type Name" type="text" defaultValue={menuType.name} />       
-          <SubmitButton text="update menuType" />
+          <SubmitButton text="update" />
         </FormContainer>
       </div>
     </section>

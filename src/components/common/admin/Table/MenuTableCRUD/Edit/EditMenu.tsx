@@ -37,7 +37,7 @@ export const EditMenu = ({ menu, onSuccess }: EditMenuProps) => {
           <input type="hidden" name="oldFileID" value={menu.fileID ?? ""} />
           <input type="hidden" name="oldImage" value={menu.image ?? ""} />
           <ImageUploader />
-          <SubmitButton text="update menu" />
+          <SubmitButton text="update" />
         </FormContainer>
       </div>
     </section>

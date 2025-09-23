@@ -43,7 +43,7 @@ export const EditStaff = ({ staff, onSuccess }: EditStaffProps) => {
                     <input type="hidden" name="oldFileID" value={staff.fileID ?? ""} />
                     <input type="hidden" name="oldImage" value={staff.image ?? ""} />
                     <ImageStaffUploader />
-                    <SubmitButton text="update menu" />
+                    <SubmitButton text="update" />
                 </FormContainer>
             </div>
         </section>

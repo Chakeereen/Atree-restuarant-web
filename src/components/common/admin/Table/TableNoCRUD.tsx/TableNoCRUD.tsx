@@ -63,7 +63,7 @@ export default function MenuTypeTableCRUD() {
             <Card className="shadow-lg rounded-2xl">
                 <CardContent>
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold">📋 รายการเมนู</h2>
+                        <h2 className="text-xl font-semibold">📋 โต๊ะอาหาร</h2>
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
                             className="bg-blue-500 text-white px-4 py-2 rounded"

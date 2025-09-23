@@ -29,7 +29,7 @@ export const EditTableNo = ({ tableNo, onSuccess }: EditTableNoProps) => {
         >
           <input type="hidden" name="tableNo" value={tableNo.tableNo ?? ""} />
           <FormInput name="locationDetail" label="Menu Type Name" type="text" defaultValue={tableNo.locationDetail} />       
-          <SubmitButton text="update menuType" />
+          <SubmitButton text="update" />
         </FormContainer>
       </div>
     </section>

@@ -38,7 +38,7 @@ export const EditAdmin = ({ admin, onSuccess }: EditStaffProps) => {
                     <input type="hidden" name="oldFileID" value={admin.fileID ?? ""} />
                     <input type="hidden" name="oldImage" value={admin.image ?? ""} />
                     <ImageStaffUploader />
-                    <SubmitButton text="update menu" />
+                    <SubmitButton text="update" />
                 </FormContainer>
             </div>
         </section>
