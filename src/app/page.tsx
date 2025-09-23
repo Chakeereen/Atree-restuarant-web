@@ -2,17 +2,12 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-
+import { Darkmode } from "@/components/common/Navbar/DarkMode";
 import HeaderMain from "@/components/common/Header/header";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // ✅ เพิ่มเข้ามา
 
 const HomePage = () => {
-
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push("/customer");
-  };
+  const router = useRouter(); // ✅ ใช้งาน router
 
   const featuredDishes = [
     {
@@ -51,8 +46,9 @@ const HomePage = () => {
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
             ร้านอาหาร Halal กลางเมืองเชียงใหม่ จำหน่ายอาหารอร่อยหลากหลาย เช่น โจ๊ก, ข้าวหมก, โรตี, ชาชัก
           </p>
+          {/* ✅ ปุ่มสั่งอาหารไปหน้า /customer */}
           <Button
-            onClick={handleClick}
+            onClick={() => router.push("/customer")}
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition"
           >
             สั่งอาหารตอนนี้
@@ -80,8 +76,12 @@ const HomePage = () => {
                 />
               </div>
               <div className="p-4">
-                <h4 className="font-semibold text-lg text-gray-800 dark:text-gray-100 mb-2">{dish.name}</h4>
-                <p className="text-gray-600 dark:text-gray-300">{dish.description}</p>
+                <h4 className="font-semibold text-lg text-gray-800 dark:text-gray-100 mb-2">
+                  {dish.name}
+                </h4>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {dish.description}
+                </p>
               </div>
             </div>
           ))}
@@ -91,7 +91,9 @@ const HomePage = () => {
       {/* About Section */}
       <section className="bg-gray-100 dark:bg-gray-800 py-16">
         <div className="max-w-5xl mx-auto px-4 text-center">
-          <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4">เรื่องราวของเรา</h3>
+          <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            เรื่องราวของเรา
+          </h3>
           <p className="text-gray-700 dark:text-gray-300 text-lg">
             ATREE อยุ่ประตูช้างเผือก กลางเมืองเชียงใหม่ โดยมีเป้าหมายในการนำเสนออาหาร halal คุณภาพดี รสชาติอร่อย และเป็นมิตรต่อทุกคน
           </p>

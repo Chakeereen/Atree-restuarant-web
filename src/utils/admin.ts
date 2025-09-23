@@ -1,8 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"; // import toaster
-
+import { redirect } from "next/navigation"; // ใช้ redirect จาก Next.js
 const baseUrl = process.env.NEXT_PUBLIC_API_URL as string;
+
 
 export const useLogoutAdmin = () => {
   const router = useRouter();
@@ -38,6 +39,7 @@ export const useLogoutAdmin = () => {
 };
 
 
+
 export const loginAdminAction = async (prevState: any, formData: FormData) => {
   try {
     const email = formData.get("email") as string;
@@ -54,19 +56,21 @@ export const loginAdminAction = async (prevState: any, formData: FormData) => {
     if (!res.ok) {
       return { success: false, message: data.error || "Login ไม่สำเร็จ" };
     }
-    console.log(data)
+
     // เก็บ token และ role ใน localStorage
-    console.log(typeof(window))
     if (typeof window !== "undefined") {
-      localStorage.setItem("token", data.token);         // token
-      localStorage.setItem("role", data.user.role);      // role
+      localStorage.setItem("token", data.token); // token
+      localStorage.setItem("role", data.user.role); // role
+    }
+
+    // ✅ ถ้า role เป็น admin ให้ redirect ไป /admin
+    if (data.user.role === "admin") {
+      redirect("/admin");
     }
 
     return { success: true, message: data.message };
-    
   } catch (error) {
     console.error(error);
     return { success: false, message: "เกิดข้อผิดพลาดในการ login" };
   }
-
 };
