@@ -4,22 +4,21 @@ import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    // สร้าง response แยก
     const res = NextResponse.json({ message: "Logout สำเร็จ" });
-
-    // ลบ accessToken cookie
+    // ลบ cookie
     res.cookies.set("accessToken", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 0, // ลบ cookie
+      maxAge: 0,
     });
 
-    // ลบ refreshToken cookie
     res.cookies.set("refreshToken", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 0, // ลบ cookie
+      maxAge: 0,
     });
 
     return res;

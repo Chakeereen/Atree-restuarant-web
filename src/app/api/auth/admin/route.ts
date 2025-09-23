@@ -1,4 +1,3 @@
-// src/app/api/auth/admin/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
@@ -7,6 +6,8 @@ import { generateAccessToken, generateRefreshToken } from "@/utils/่jwt";
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
+
+    console.log(email,password)
 
     if (!email || !password) {
       return NextResponse.json({ error: "กรุณากรอก email และ password" }, { status: 400 });
@@ -25,24 +26,31 @@ export async function POST(req: NextRequest) {
     const accessToken = generateAccessToken(admin.adminID, admin.role, admin.name, admin.surname, admin.image);
     const refreshToken = generateRefreshToken(admin.adminID);
 
-    const res = NextResponse.json({
-      message: "Login สำเร็จ",
-      token: accessToken,
-      user: {
-        id: admin.adminID,
-        name: admin.name,
-        surname: admin.surname,
-        email: admin.email,
-        role: admin.role,
-      },
-    });
+
+    // สร้าง response ด้วย new NextResponse
+    const res = new NextResponse(
+      JSON.stringify({
+        message: "Login สำเร็จ",
+        token: accessToken,
+        user: {
+          id: admin.adminID,
+          name: admin.name,
+          surname: admin.surname,
+          email: admin.email,
+          role: admin.role,
+        },
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
 
     // เซ็ต cookie
     res.cookies.set("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // ถ้า dev จะเป็น false
       path: "/",
       maxAge: 24 * 60 * 60,
+      sameSite: "strict", // เพิ่มให้แน่นหนาขึ้น
+      
     });
 
     res.cookies.set("refreshToken", refreshToken, {
@@ -50,6 +58,7 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: 7 * 24 * 60 * 60,
+      sameSite: "strict",
     });
 
     return res;
