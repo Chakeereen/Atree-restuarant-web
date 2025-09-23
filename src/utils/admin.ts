@@ -1,11 +1,11 @@
 "use clients";
 
-import router from "next/router";
+
 import { toast } from "sonner";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
-export async function loginAdminAction(formData: FormData) {
+export async function loginAdminAction(prevState: any, formData: FormData) {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
 
@@ -44,7 +44,7 @@ export async function logoutAdmin() {
       return;
     }
 
-    toast("Logout สำเร็จ");
+    toast.success("Logout สำเร็จ");
   } catch (err) {
     console.error(err);
     toast("เกิดข้อผิดพลาดในการ logout");

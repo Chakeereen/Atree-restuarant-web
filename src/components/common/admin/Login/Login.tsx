@@ -4,7 +4,12 @@ import FormInput from "@/components/common/admin/Form/FormInput";
 import { LoginFormContainer } from "./LoginFormContainer";
 import { loginAdminAction } from "@/utils/admin";
 
-export default function LoginForm() {
+interface LoginProps {
+  onSuccess?: () => void;
+}
+
+
+const LoginForm = ({ onSuccess }: LoginProps) => {
   return (
     <section className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-8 w-full max-w-md">
@@ -12,7 +17,11 @@ export default function LoginForm() {
           Login
         </h1>
 
-        <LoginFormContainer action={loginAdminAction}>
+        <LoginFormContainer
+          action={loginAdminAction}
+          onSuccess={onSuccess}
+          refreshOnSuccess={false}
+        >
           <div className="space-y-4">
             <FormInput name="email" label="Email" type="email" />
             <FormInput name="password" label="Password" type="password" />
@@ -25,3 +34,5 @@ export default function LoginForm() {
     </section>
   );
 }
+
+export default LoginForm;
