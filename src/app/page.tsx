@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+
 import HeaderMain from "@/components/common/Header/header";
 import { useRouter } from "next/router";
 
@@ -10,7 +11,7 @@ const HomePage = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/customer?status=pending");
+    router.push("/customer");
   };
 
   const featuredDishes = [
