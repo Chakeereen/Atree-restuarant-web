@@ -120,7 +120,7 @@ model MenuType {
 
 model Payment {
   paymentNo Int           @id @default(autoincrement())
-  orderNo   Int
+  orderNo   Int           @unique
   totalCost Decimal       @db.Decimal(10, 2) // เปลี่ยนเป็น Decimal
   dateTime  DateTime      @default(now())
   updateAt  DateTime      @updatedAt

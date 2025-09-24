@@ -15,6 +15,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 🔍 ตรวจสอบก่อนว่ามี payment เดิมแล้วหรือยัง
+    const existingPayment = await prisma.payment.findUnique({
+      where: { orderNo },
+      include: {
+        order: true,
+        method: true,
+        staff: true,
+      },
+    });
+
+    if (existingPayment) {
+      // ถ้ามีแล้ว return กลับเลย (ไม่ต้องสร้างใหม่, ไม่ต้องแจ้งเตือน)
+      return NextResponse.json({ success: true, data: existingPayment });
+    }
+
+    // ถ้าไม่มี -> create ใหม่
     const payment = await prisma.payment.create({
       data: {
         orderNo,
@@ -22,18 +38,23 @@ export async function POST(req: NextRequest) {
         methodID,
         staffID: staffID || null,
         image: image || null,
-        fileID: fileID || null, // แก้ชื่อ field ให้ตรงกับ Prisma Model
+        fileID: fileID || null,
         status: "PENDING",
+      },
+      include: {
+        order: true,
+        method: true,
+        staff: true,
       },
     });
 
     const tableNO = await prisma.orders.findUnique({
-      where: { orderNo: orderNo },
+      where: { orderNo },
       select: {
         orderNo: true,
         tableNo: true,
-      }
-    })
+      },
+    });
 
     const tokens = await prisma.fcmToken.findMany({
       select: { token: true },
@@ -49,7 +70,7 @@ export async function POST(req: NextRequest) {
       const message = {
         notification: {
           title: "📢 มีออเดอร์ใหม่",
-          body: `โต๊ะ ${tableNO?.orderNo} มีออเดอร์ #${tableNO?.tableNo}`,
+          body: `โต๊ะ ${tableNO?.tableNo} มีออเดอร์ #${tableNO?.orderNo}`,
         },
         data: {
           orderNo: m_orderNo,
@@ -59,11 +80,9 @@ export async function POST(req: NextRequest) {
         tokens: tokenList,
       };
 
-      // multicast แจ้งไปหลาย token พร้อมกัน
       const response = await admin.messaging().sendEachForMulticast(message);
       console.log("FCM success:", response.successCount, "FCM failed:", response.failureCount);
     }
-
 
     return NextResponse.json({ success: true, data: payment });
   } catch (err: any) {
@@ -74,7 +93,6 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    // ดึงข้อมูล Payment ทั้งหมด พร้อม relations
     const payments = await prisma.payment.findMany({
       include: {
         order: true,

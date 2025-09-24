@@ -8,7 +8,6 @@ const phone = process.env.NEXT_PUBLIC_PHONE;
 
 
 export const getPaymentDetails = async (orderNo: number) => {
-  console.log(orderNo)
   try {
     const res = await fetch(`${baseUrl}/api/customer/payment?orderNo=${orderNo}`, {
       method: "GET",
