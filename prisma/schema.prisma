@@ -178,7 +178,7 @@ model LoginLog {
 
 model FcmToken {
   id        Int      @id @default(autoincrement())
-  staffID   String  @unique
+  staffID   String   @unique
   token     String
   createdAt DateTime @default(now())
 
@@ -190,7 +190,7 @@ model FcmToken {
 
 model Recommended {
   id        Int      @id @default(autoincrement())
-  menuID    Int
+  menuID    Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
