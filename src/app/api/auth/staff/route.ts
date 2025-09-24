@@ -42,24 +42,14 @@ export async function POST(req: NextRequest) {
 
     // บันทึก FCM Token
     if (fcmToken) {
-      const existing = await prisma.fcmToken.findFirst({
-        where: { staffID: staff.staffID, token: fcmToken },
+      await prisma.fcmToken.upsert({
+        where: { staffID: staff.staffID }, // staffID เป็น unique อยู่แล้ว
+        update: { token: fcmToken },
+        create: {
+          staffID: staff.staffID,
+          token: fcmToken,
+        },
       });
-
-      if (!existing) {
-        await prisma.fcmToken.create({
-          data: {
-            staffID: staff.staffID,
-            token: fcmToken,
-          },
-        });
-      }
-      else {
-        await prisma.fcmToken.update({
-          where :{staffID : existing.staffID},
-          data : {token : fcmToken}
-        });
-      }
     }
 
     // ✅ log ว่าสำเร็จ
@@ -91,7 +81,7 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch (err: any) {
-    
+
     console.error("Login error:", err);
 
     // log error (ระบบพัง)
