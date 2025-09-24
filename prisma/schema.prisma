@@ -178,7 +178,7 @@ model LoginLog {
 
 model FcmToken {
   id        Int      @id @default(autoincrement())
-  staffID   String?
+  staffID   String  @unique
   token     String
   createdAt DateTime @default(now())
 
@@ -189,10 +189,10 @@ model FcmToken {
 }
 
 model Recommended {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   menuID    Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  menu      MenuLists @relation(fields: [menuID], references: [menuID], onDelete: Cascade)
+  menu MenuLists @relation(fields: [menuID], references: [menuID], onDelete: Cascade)
 }

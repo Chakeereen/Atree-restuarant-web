@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { generateAccessToken, generateRefreshToken } from "@/utils/่jwt";
+import { generateRefreshToken, generateStaffAccessToken } from "@/utils/่jwt";
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ✅ Login สำเร็จ
-    const accessToken = generateAccessToken(staff.staffID, staff.role);
+    const accessToken = generateStaffAccessToken(staff.staffID, staff.role);
     const refreshToken = generateRefreshToken(staff.staffID);
 
     // บันทึก FCM Token
@@ -52,6 +52,12 @@ export async function POST(req: NextRequest) {
             staffID: staff.staffID,
             token: fcmToken,
           },
+        });
+      }
+      else {
+        await prisma.fcmToken.update({
+          where :{staffID : existing.staffID},
+          data : {token : fcmToken}
         });
       }
     }
