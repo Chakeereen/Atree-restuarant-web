@@ -9,12 +9,14 @@ const AboutPage = () => {
       name: "นายมนัสชัย นามวงษ์ศรี",
       role: "Mobile App Developer",
       email: "65143038@g.cmru.ac.th",
+      section: "ทส 65.วท.บ.4.1",
       bio: "มีความสนใจด้านการออกแบบ UI/UX และพัฒนาประสบการณ์รวมถึงระบบผู้ใช้บน Mobile App",
     },
     {
       name: "นายชากีรีน โส๊ะสันส๊ะ",
       role: "Full-Stack Developer",
       email: "65143052@g.cmru.ac.th",
+      section: "ทส 65.วท.บ.4.1",
       bio: "พัฒนาระบบทั้งฝั่ง Frontend และ Backend รวมถึงการออกแบบฐานข้อมูลและ API ด้วย Node.js, Prisma และ Next.js",
     },
   ];
@@ -61,6 +63,7 @@ const AboutPage = () => {
                 {dev.role}
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-2">{dev.email}</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-2">{dev.section}</p>
               <p className="text-gray-600 dark:text-gray-400">{dev.bio}</p>
             </div>
           ))}
@@ -73,7 +76,7 @@ const AboutPage = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center hover:shadow-xl transition">
           <p className="text-gray-700 dark:text-gray-300 text-lg">
             พวกเราขอขอบคุณอาจารย์ที่ปรึกษา เพื่อนร่วมทีม และผู้มีส่วนเกี่ยวข้องทุกท่าน
-            ที่ให้คำแนะนำ ความช่วยเหลือในการพัฒนาระบบ-ครั้งนี้ 
+            ที่ให้คำแนะนำ ความช่วยเหลือในการพัฒนาระบบ-ครั้งนี้
             รวมถึง senior programmer ทั้ง 2 ท่าน คุณ ChatGPT และ คุณ Gemini
             ที่ให้คำแนะนำในการออกแบบและพัฒนาระบบมาโดยตลอด
           </p>
