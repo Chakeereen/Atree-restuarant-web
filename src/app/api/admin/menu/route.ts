@@ -33,34 +33,34 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body: RequestBody = await request.json();
-    const { name, price, image, fileID, typeID } = body; // ✅ เพิ่ม fileID
+    const body: { menuID: number } = await request.json();
+    const { menuID } = body;
 
-    // ตรวจสอบข้อมูล
-    if (!name || !price || !image || !typeID || !fileID) {
+    if (!menuID) {
       return NextResponse.json(
-        { error: 'ข้อมูลไม่ครบถ้วน: กรุณากรอก name, price, image, fileID, และ typeID' },
+        { error: "กรุณาระบุ menuID" },
         { status: 400 }
       );
     }
 
-    // สร้างข้อมูลใหม่
-    const newMenu = await prisma.menuLists.create({
-      data: {
-        name,
-        price,
-        image,
-        fileID,       // ✅ เก็บ fileID ด้วย
-        typeID,
-        // isAvailable มี default เป็น true
-      },
+    const newRecommended = await prisma.recommended.create({
+      data: { menuID },
     });
 
-    return NextResponse.json(newMenu, { status: 201 });
-  } catch (error) {
-    console.error("Error creating menu:", error);
+    return NextResponse.json(newRecommended, { status: 201 });
+  } catch (error: any) {
+    console.error("Error creating recommended:", error);
+
+    // เช็คว่าเป็น Unique constraint fail หรือไม่
+    if (error.code === "P2002" && error.meta?.target?.includes("menuID")) {
+      return NextResponse.json(
+        { error: "รายการนี้ถูกเพิ่มใน Recommended แล้ว" },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'เกิดข้อผิดพลาดในการสร้างเมนู' },
+      { error: "เกิดข้อผิดพลาดในการสร้าง Recommended" },
       { status: 500 }
     );
   }

@@ -21,18 +21,41 @@ export async function GET(req: Request, { params }: Params) {
 }
 
 // PUT /api/recommended/:id
+
+
 export async function PUT(req: Request, { params }: Params) {
   const id = Number(params.id);
   const { menuID } = await req.json();
+
+  if (!menuID) {
+    return NextResponse.json(
+      { error: "กรุณาระบุ menuID" },
+      { status: 400 }
+    );
+  }
 
   try {
     const updated = await prisma.recommended.update({
       where: { id },
       data: { menuID },
     });
-    return NextResponse.json(updated);
-  } catch (error) {
-    return NextResponse.json({ error: "Update failed" }, { status: 400 });
+
+    return NextResponse.json(updated, { status: 200 });
+  } catch (error: any) {
+    console.error("Error updating recommended:", error);
+
+    // ดัก Unique constraint failed
+    if (error.code === "P2002" && error.meta?.target?.includes("menuID")) {
+      return NextResponse.json(
+        { error: "ไม่สามารถอัปเดตรายการนี้: menuID ถูกใช้งานแล้ว" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Update failed" },
+      { status: 500 }
+    );
   }
 }
 
