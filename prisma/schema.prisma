@@ -97,7 +97,7 @@ model OrderTrack {
 
 model MenuLists {
   menuID      Int      @id @default(autoincrement())
-  name        String
+  name        String   @unique
   price       Decimal  @db.Decimal(10, 2) // ใช้ Decimal
   isAvailable Boolean  @default(true)
   image       String

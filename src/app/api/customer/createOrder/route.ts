@@ -1,7 +1,7 @@
 // src/app/api/customer/order/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { admin } from "@/lib/firebaseAdmin"; // import firebase admin instance
+import { admin } from "@/lib/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,31 +25,29 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    //console.log(cart)
 
-    // บันทึก orderDetail ลง DB
-    await prisma.orderDetail.createMany({
-      data: cart.map((item) => ({
-        orderNo: orderInfo.orderNo,
-        menuID: item.menuID,
-        amount: item.amount,
-        price: item.price,
-        totalCost: item.totalCost,
-        trackOrderID: item.trackOrderID,
-        description: item.description || "",
-        place: item.place,
-      })),
+    // ✅ Transaction สำหรับ insert orderDetail
+    await prisma.$transaction(async (tx) => {
+      await tx.orderDetail.createMany({
+        data: cart.map((item) => ({
+          orderNo: orderInfo.orderNo,
+          menuID: item.menuID,
+          amount: item.amount,
+          price: item.price,
+          totalCost: item.totalCost,
+          trackOrderID: item.trackOrderID,
+          description: item.description || "",
+          place: item.place,
+        })),
+      });
     });
 
-    // 📌 ดึง fcmToken จาก DB (สมมติว่า staff ทุกคนต้องได้รับแจ้ง)
-    const tokens = await prisma.fcmToken.findMany({
-      select: { token: true },
-    });
+    // 📌 ส่ง FCM notification หลัง DB insert สำเร็จ
+    const tokens = await prisma.fcmToken.findMany({ select: { token: true } });
 
     if (tokens.length > 0) {
       const tokenList = tokens.map((t) => t.token);
 
-      // ส่ง Notification
       const message = {
         notification: {
           title: "📢 มีออเดอร์ใหม่",
@@ -63,15 +61,23 @@ export async function POST(req: NextRequest) {
         tokens: tokenList,
       };
 
-      // multicast แจ้งไปหลาย token พร้อมกัน
-      const response = await admin.messaging().sendEachForMulticast(message);
-      console.log("FCM success:", response.successCount, "FCM failed:", response.failureCount);
+      // ส่งแบบ async ไม่บล็อก response
+      admin.messaging()
+        .sendEachForMulticast(message)
+        .then((response) => {
+          console.log(
+            "FCM success:", response.successCount,
+            "FCM failed:", response.failureCount
+          );
+        })
+        .catch((err) => console.error("FCM error:", err));
     }
 
     return NextResponse.json({
       success: true,
       message: "Order created successfully and notification sent",
     });
+
   } catch (err: any) {
     console.error("Error creating order:", err);
     return NextResponse.json(

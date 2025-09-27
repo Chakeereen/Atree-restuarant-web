@@ -6,12 +6,13 @@ export async function PATCH(req: Request) {
     // ✅ รับข้อมูลจาก request body
     const { id, trackId } = await req.json();
 
-    const updatedDetail = await prisma.orderDetail.update({
-      where: { detailNo: id }, // ใช้ id ที่รับมา
-      data: {
-        trackOrderID: trackId, // อัปเดตค่า trackOrderID
-      },
-    });
+    // ✅ ใช้ transaction แม้ update table เดียว
+    const [updatedDetail] = await prisma.$transaction([
+      prisma.orderDetail.update({
+        where: { detailNo: id },
+        data: { trackOrderID: trackId },
+      }),
+    ]);
 
     return NextResponse.json(updatedDetail, { status: 200 });
   } catch (error) {
