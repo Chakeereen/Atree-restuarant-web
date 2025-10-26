@@ -108,13 +108,13 @@ export default function RecommendedManager() {
             <div className="flex gap-2 justify-end">
               {editId === rec.id ? (
                 <>
-                  <button onClick={saveEdit} className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition">Save</button>
-                  <button onClick={cancelEdit} className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-500 transition">Cancel</button>
+                  <button onClick={saveEdit} className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition">บันทึก</button>
+                  <button onClick={cancelEdit} className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-500 transition">ยกเลิก</button>
                 </>
               ) : (
                 <>
-                  <button onClick={() => startEdit(rec)} className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition">Edit</button>
-                  <button onClick={() => deleteRecommended(rec.id)} className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">Delete</button>
+                  <button onClick={() => startEdit(rec)} className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition">แก้ไข</button>
+                  <button onClick={() => deleteRecommended(rec.id)} className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">ลบ</button>
                 </>
               )}
             </div>

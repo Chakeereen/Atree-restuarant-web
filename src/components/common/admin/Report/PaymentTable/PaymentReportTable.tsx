@@ -145,13 +145,13 @@ export default function PaymentReportTable() {
         <table className="w-full table-auto border-collapse text-left">
           <thead className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
             <tr>
-              <th className="px-3 py-2">No</th>
-              <th className="px-3 py-2">Order No</th>
-              <th className="px-3 py-2">Method</th>
-              <th className="px-3 py-2">Cost</th>
-              <th className="px-3 py-2">Date / Time</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Staff</th>
+              <th className="px-3 py-2">ลำดับ</th>
+              <th className="px-3 py-2">เลขออเดอร์</th>
+              <th className="px-3 py-2">วิธีชำระเงิน</th>
+              <th className="px-3 py-2">จำนวนเงิน</th>
+              <th className="px-3 py-2">วันที่</th>
+              <th className="px-3 py-2">สถานะ</th>
+              <th className="px-3 py-2">พนักงาน</th>
             </tr>
           </thead>
           <tbody>
